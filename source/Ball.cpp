@@ -9,7 +9,7 @@ Ball::Ball(double x, double y, double radius, double mass, sf::Color color)
 	this->shape.setFillColor(color);
 	this->physicsbody = new RigidCircle(sf::Vector2f(x, y), mass, radius);
 	PhysicsEngine* engine =  PhysicsEngine::getInstance();
-	engine->testingengine();
+	//engine->testingengine();
 	int temp = PhysicsEngine::getInstance()->addObject(this->physicsbody);
 }
 
