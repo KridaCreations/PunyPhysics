@@ -19,11 +19,11 @@ int main()
     //ImGui::SFML::Init(window);
     
     std::unordered_set<Ball*>objects;
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 3; i++)
     {
         int ballposx = std::rand() % 800 + 30;
         int ballposy = std::rand() % 800 + 30;
-        Ball* firstball = new Ball(ballposx,ballposy,50,10);
+        Ball* firstball = new Ball(ballposx, ballposy, (rand() % 30) + 30, 10);
         objects.insert(firstball);
     }
 
@@ -35,7 +35,7 @@ int main()
     box.setOutlineThickness(10.f);
     box.setOutlineColor(sf::Color(250, 150, 100));
 
-    PhysicsEngine::getInstance()->gravity = sf::Vector2f(0.0, 500.0);
+    //PhysicsEngine::getInstance()->gravity = sf::Vector2f(0.0, 500.0);
     PhysicsEngine::getInstance()->bh->setnew(boxwidth, boxheight, width / 2, height / 2);
 
     sf::Clock gameClock;

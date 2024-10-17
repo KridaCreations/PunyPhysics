@@ -19,7 +19,7 @@ class PhysicsEngine
 		sf::Vector2f setmag(sf::Vector2f vec, double mag);
 		double dotpro(sf::Vector2f vec1, sf::Vector2f vec2);
 		sf::Vector2f mult(sf::Vector2f vec, double factor);
-
+		double getmag(sf::Vector2f vect);
 
 		sf::Vector2f gravity = sf::Vector2f(0.0, 0.0);
 		BoundBox* bh = new BoundBox(200, 200, 50, 50);
@@ -27,7 +27,7 @@ class PhysicsEngine
 		std::vector<RigidCircle*>indexes;
 		std::vector<int>unusedindex;
 		int maxindex = 0;
-		double coeffofrestitution = 0.8;
+		double coeffofrestitution = 1.0;
 		
 
 
