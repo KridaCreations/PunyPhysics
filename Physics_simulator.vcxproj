@@ -147,12 +147,16 @@
     <ClCompile Include="source\BoundBox.cpp" />
     <ClCompile Include="source\PhysicsEngine.cpp" />
     <ClCompile Include="source\RigidCircle.cpp" />
+    <ClCompile Include="source\rod.cpp" />
+    <ClCompile Include="source\staticball.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Ball.h" />
     <ClInclude Include="header\BoundBox.h" />
     <ClInclude Include="header\PhysicsEngine.h" />
     <ClInclude Include="header\RigidCircle.h" />
+    <ClInclude Include="header\rod.h" />
+    <ClInclude Include="header\staticball.h" />
     <ClInclude Include="imgui\imconfig-SFML.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui-SFML.h" />

@@ -9,13 +9,27 @@ int PhysicsEngine::addObject(RigidCircle* obj)
 		int lastindex = (this->unusedindex).back();
 		(this->indexes)[lastindex] = obj;
 		(this->unusedindex).pop_back();
-		(this->objects).insert(obj);
+		if (obj->type == RigidCircle::_rigid)
+		{
+			(this->rigidobjects).insert(obj);
+		}
+		else
+		{
+			(this->staticobjects.insert(obj));
+		}
 		return lastindex;
 	}
 	else
 	{
 		(this->indexes).push_back(obj);
-		(this->objects).insert(obj);
+		if (obj->type == RigidCircle::_rigid)
+		{
+			(this->rigidobjects).insert(obj);
+		}
+		else
+		{
+			(this->staticobjects.insert(obj));
+		}
 		this->maxindex += 1;
 		return (this->indexes).size() - 1;
 	}
@@ -30,104 +44,117 @@ void PhysicsEngine::removeObject(int index)
 void PhysicsEngine::process(double delta)
 {
 	f++;
-	//calculating velocity of all objects
-	for (auto& it : this->objects)
+	int maxiterations = 1;
+	delta = delta / (double)maxiterations;
+	for (int i = 0; i < maxiterations; i++)
 	{
-		it->veladd.x = it->veladd.x + (it->acceleration.x * delta);
-		it->veladd.y = it->veladd.y + (it->acceleration.y * delta);
-		it->veladd.x = it->veladd.x + (this->gravity.x * delta);
-		it->veladd.y = it->veladd.y + (this->gravity.y * delta);
+
+		this->solveCollisionCumulative();
+		calculatemovement(delta);
+		
+	}
+}
+
+void PhysicsEngine::calculatemovement(double delta)
+{
+	for (auto& it : rigidobjects)
+	{
+		it->pos = it->pos + this->mult(it->velocity, delta);
+		it->velocity = it->velocity + this->mult(this->gravity + it->acceleration, delta);
 	}
 
-	//calculating position of all objects
-	for (auto& it : this->objects)
+	for (auto& it : staticobjects)
 	{
-		it->posadd.x = it->posadd.x + (it->velocity.x * delta);
-		it->posadd.y = it->posadd.y + (it->velocity.y * delta);
-		//std::cout << (it->velocity.y) << " " << delta << " " << (double)((double)it->velocity.y * delta) << std::endl;
+		it->pos = it->pos + this->mult(it->velocity, delta);
+		it->velocity = it->velocity + this->mult(it->acceleration, delta);
 	}
-
-	
-
-	//adding the position to newposition
-	for (auto& it : this->objects)
-	{
-		//std::cout << "prev pos " << (it->pos.x) << " " << (it->pos.y) << std::endl;
-		it->pos.x = it->pos.x + it->posadd.x;
-		it->pos.y = it->pos.y + it->posadd.y;
-		//std::cout <<"possadd " << (it->posadd.x) << " " << (it->posadd.y) << std::endl;
-		//std::cout << "pos " << (it->pos.x) << " " << (it->pos.y) << std::endl;
-		it->posadd.x = 0, it->posadd.y = 0;
-
-		it->velocity.x = it->velocity.x + it->veladd.x;
-		it->velocity.y = it->velocity.y + it->veladd.y;
-		//std::cout << (it->velocity.x) << " " << (it->velocity.y) << std::endl;
-		it->veladd.x = 0, it->veladd.y = 0;
-	}
-	
-	
-	this->solveCollisionCumulative();
-	//this->solveCollisionDirect();
-
 }
 
 void PhysicsEngine::solveCollisionCumulative()
 {
 
 	double resolutionfactor = 0.8;
-	int maxiter = 15;
-	// resolving collision
-
-	//std::cout << "checking collision " << std::endl;
+	int maxiter = 30;
 
 	for (int i = 0; i < maxiter; i++)
 	{
-		for (auto& it : this->objects)
+		for (auto& it : this->rigidobjects)
 		{
 			//checking for collision with the bounding box
 			if ((it->pos.x + it->radius) > bh->right)
 			{
-				//std::cout << "collidec right" << std::endl;
-				it->velocity.x = -1 * abs(it->velocity.x);// (-(1 + this->coeffofrestitution) * abs(it->velocity.x));
+				it->velocity.x = -(this->coeffofrestitution) * abs(it->velocity.x);
 				double diff = it->pos.x + it->radius - bh->right;
 				it->pos.x = it->pos.x - (diff * resolutionfactor);
 			}
 			if ((it->pos.x - it->radius) < (bh->left))
 			{
-				//std::cout << "collidec left" << std::endl;
-				it->velocity.x = 1 * abs(it->velocity.x);// (1 + this->coeffofrestitution)* abs(it->velocity.x);
+				it->velocity.x = this->coeffofrestitution* abs(it->velocity.x);
 				double diff = bh->left - (it->pos.x - it->radius);
 				it->pos.x = it->pos.x + (diff * resolutionfactor);
 			}
 			if ((it->pos.y + it->radius) > (bh->bottom))
 			{
-				//std::cout << "collidec bottom" << std::endl;
-				it->velocity.y = -1 * abs(it->velocity.y); //(-(1 + this->coeffofrestitution) * abs(it->velocity.y));
+				it->velocity.y = (-(this->coeffofrestitution) * abs(it->velocity.y));
 				double diff = (it->pos.y + it->radius) - (bh->bottom);
 				it->pos.y = it->pos.y - (diff * resolutionfactor);
 			}
 			if ((it->pos.y - it->radius) < (bh->top))
 			{
-				//std::cout << "collidec top" << std::endl;
-				it->velocity.y = 1 * abs(it->velocity.y);// (1 + this->coeffofrestitution)* abs(it->velocity.y);
+				it->velocity.y =(this->coeffofrestitution)* abs(it->velocity.y);
 				double diff = bh->top - (it->pos.y - it->radius);
 				it->pos.y = it->pos.y + (diff * resolutionfactor);
 			}
 		}
-		
-		/*for (auto& it : this->objects)
-		{
-			it->velocity.x = it->velocity.x + it->veladd.x;
-			it->velocity.y = it->velocity.y + it->veladd.y;
-			it->veladd.x = 0, it->veladd.y = 0;
-		}*/
 
-		//continue;
+		//detecting collision between rigid bodies and static bodies
+		std::vector<std::pair<RigidCircle*, RigidCircle*>>staticcollision;
+		for (auto itr = this->rigidobjects.begin(); itr != this->rigidobjects.end(); itr++)
+		{
+			for (auto itr2 = this->staticobjects.begin(); itr2 != this->staticobjects.end(); itr2++)
+			{
+				sf::Vector2f impact = (*itr)->pos - (*itr2)->pos;
+				double length = std::sqrtf((impact.x * impact.x) + (impact.y * impact.y));
+				if (length < ((*itr)->radius + (*itr2)->radius))
+				{
+					//std::cout << "collided " << std::endl;
+					staticcollision.push_back({ (*itr),(*itr2) });
+				}
+			}
+		}
+
+		//solving the collision between rigid bodies and static bodies
+		for (auto& it : staticcollision)
+		{
+			RigidCircle* rigid = it.first;
+			RigidCircle* stat = it.second;
+			sf::Vector2f impact = rigid->pos - stat->pos;
+			double length = std::sqrtf((impact.x * impact.x) + (impact.y * impact.y));
+
+			double overlap = (rigid->radius + stat->radius) - length;
+			sf::Vector2f dir = impact;
+			dir = this->setmag(dir, overlap * resolutionfactor);
+			rigid->pos = (rigid->pos) + dir;
+			impact = rigid->pos - stat->pos;
+
+			sf::Vector2f othervalrem = this->mult(impact, (this->dotpro(stat->velocity, impact) / (length * length)));
+			sf::Vector2f thisvalrem = this->mult(impact, (this->dotpro(rigid->velocity, impact) / (length * length)));
+			rigid->velocity = rigid->velocity - thisvalrem;
+
+
+			sf::Vector2f deltathis = this->mult((othervalrem - thisvalrem),  this->coeffofrestitution) + thisvalrem;
+			rigid->velocity = rigid->velocity + deltathis;
+			
+
+
+		}
+
+
 		//for other bodies
 		std::vector<std::pair<RigidCircle*, RigidCircle*>>collided;
-		for (auto itr = this->objects.begin(); itr != this->objects.end(); itr++)
+		for (auto itr = this->rigidobjects.begin(); itr != this->rigidobjects.end(); itr++)
 		{
-			for (auto itr2 = next(itr); itr2 != this->objects.end(); itr2++)
+			for (auto itr2 = next(itr); itr2 != this->rigidobjects.end(); itr2++)
 			{
 				sf::Vector2f impact = (*itr)->pos - (*itr2)->pos;
 				double length = std::sqrtf((impact.x * impact.x) + (impact.y * impact.y));
@@ -152,8 +179,8 @@ void PhysicsEngine::solveCollisionCumulative()
 			//distance correction
 			first->pos = (first->pos) + dir;
 			second->pos = (second->pos) - dir;
+			//impact = first->pos - second->pos;
 			length = first->radius + second->radius;
-			sf::Vector2f temp = first->pos - second->pos;
 			impact = this->setmag(impact, length);
 
 
@@ -180,37 +207,46 @@ void PhysicsEngine::solveCollisionCumulative()
 	}
 }
 
+
+
 void PhysicsEngine::solveCollisionDirect()
 {
 
-	for (auto& it : this->objects)
+	for (auto& it : this->rigidobjects)
 	{
 		//checking for collision with the bounding box
 		if ((it->pos.x + it->radius) > bh->right)
 		{
-			it->velocity.x = -1 * abs(it->velocity.x);// (-(1 + this->coeffofrestitution) * abs(it->velocity.x));
-			it->pos.x = bh->right - (it->radius);
+			it->velocity.x = -(this->coeffofrestitution) * abs(it->velocity.x);
+			double diff = it->pos.x + it->radius - bh->right;
+			it->pos.x = it->pos.x - (diff);
 		}
 		if ((it->pos.x - it->radius) < (bh->left))
 		{
-			it->velocity.x = 1 * abs(it->velocity.x);// (1 + this->coeffofrestitution)* abs(it->velocity.x);
-			it->pos.x = bh->left + (it->radius);
+			//std::cout << "collidec left" << std::endl;
+			it->velocity.x = this->coeffofrestitution * abs(it->velocity.x);
+			double diff = bh->left - (it->pos.x - it->radius);
+			it->pos.x = it->pos.x + (diff);
 		}
 		if ((it->pos.y + it->radius) > (bh->bottom))
 		{
-			it->velocity.y = -1 * abs(it->velocity.y); //(-(1 + this->coeffofrestitution) * abs(it->velocity.y));
-			it->pos.y = bh->bottom - (it->radius);
+			//std::cout << "collidec bottom" << std::endl;
+			it->velocity.y = (-(this->coeffofrestitution) * abs(it->velocity.y));
+			double diff = (it->pos.y + it->radius) - (bh->bottom);
+			it->pos.y = it->pos.y - (diff);
 		}
 		if ((it->pos.y - it->radius) < (bh->top))
 		{
-			it->velocity.y = 1 * abs(it->velocity.y);// (1 + this->coeffofrestitution)* abs(it->velocity.y);
-			it->pos.y = bh->top + (it->radius);
+			//std::cout << "collidec top" << std::endl;
+			it->velocity.y = (this->coeffofrestitution) * abs(it->velocity.y);
+			double diff = bh->top - (it->pos.y - it->radius);
+			it->pos.y = it->pos.y + (diff);
 		}
 	}
 
-	for (auto itr = this->objects.begin(); itr != this->objects.end(); itr++)
+	for (auto itr = this->rigidobjects.begin(); itr != this->rigidobjects.end(); itr++)
 	{
-		for (auto itr2 = next(itr); itr2 != this->objects.end(); itr2++)
+		for (auto itr2 = next(itr); itr2 != this->rigidobjects.end(); itr2++)
 		{
 			sf::Vector2f impact = (*itr)->pos - (*itr2)->pos;
 			double length = std::sqrtf((impact.x * impact.x) + (impact.y * impact.y));

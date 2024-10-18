@@ -22,10 +22,13 @@ class PhysicsEngine
 		double getmag(sf::Vector2f vect);
 		void solveCollisionDirect();
 		void solveCollisionCumulative();
+		void calculatemovement(double delta);
+		
 
 		sf::Vector2f gravity = sf::Vector2f(0.0, 0.0);
 		BoundBox* bh = new BoundBox(200, 200, 50, 50);
-		std::set<RigidCircle*> objects;
+		std::set<RigidCircle*>staticobjects;
+		std::set<RigidCircle*>rigidobjects;
 		std::vector<RigidCircle*>indexes;
 		std::vector<int>unusedindex;
 		int maxindex = 0;

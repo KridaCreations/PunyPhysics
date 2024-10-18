@@ -1,9 +1,10 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "./header/Ball.h"
+#include "./header/staticball.h"
 #include "SFML/Graphics.hpp"
 #include "./header/PhysicsEngine.h"
-
+#include "./header/rod.h"
 #include <iostream>
 #include<unordered_set>
 using namespace std;
@@ -19,6 +20,7 @@ int main()
     //ImGui::SFML::Init(window);
     
     std::unordered_set<Ball*>objects;
+    std::unordered_set<staticball*>hardobjects;
     std::vector<sf::Color>colors = {
         sf::Color::Cyan,
         sf::Color::Green,
@@ -27,18 +29,16 @@ int main()
         sf::Color::Blue,
         sf::Color::Yellow
     };
-    for (int i = 0; i < 700;i++)
+    for (int i = 0; i <200 ;i++)
     {
         int ballposx = std::rand() % 800 + 30;
         int ballposy = std::rand() % 800 + 30;
         int mass = (rand() % 50) + 20;
-        Ball* firstball = new Ball(ballposx, ballposy, 7, 10,colors[rand()%colors.size()]);
+        Ball* firstball = new Ball(ballposx,ballposy,20, 50, colors[rand() % colors.size()]);
         objects.insert(firstball);
     }
-    /*Ball* firstball = new Ball(200, 150, 70, 100000);
-    objects.insert(firstball);*/
-    /*Ball* secondball = new Ball(200, 400, 100, 10);
-    objects.insert(secondball);*/
+
+    Rod* spinner = new Rod(450,450,15,10);
 
     int boxwidth = 800, boxheight = 800;
     sf::RectangleShape box(sf::Vector2f(boxwidth, boxheight));
@@ -49,16 +49,16 @@ int main()
     box.setOutlineColor(sf::Color(250, 150, 100));
 
     PhysicsEngine::getInstance()->coeffofrestitution = 1;
-    PhysicsEngine::getInstance()->gravity = sf::Vector2f(0,500);
+    //PhysicsEngine::getInstance()->gravity = sf::Vector2f(0,1000);
     PhysicsEngine::getInstance()->bh->setnew(boxwidth, boxheight, width / 2, height / 2);
 
     sf::Clock gameClock;
 
     int counter = 50;
     vector<pair<int, int>>dir = {
-        //{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}
+        {1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}
         //{1,0},{1,1},{0,1},{-1,1},{-1,0}
-        {1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,1},{0,1},{1,1}
+        //{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,1},{0,1},{1,1}
     };
     int dirindex = 0;
     while (window.isOpen())
@@ -69,7 +69,7 @@ int main()
         {
             counter = 50;
             //std::cout <<"gdir " << dir[dirindex].first << " " << dir[dirindex].second << std::endl;
-            PhysicsEngine::getInstance()->gravity = sf::Vector2f(dir[dirindex].first * 500, dir[dirindex].second * 500);
+            //PhysicsEngine::getInstance()->gravity = sf::Vector2f(dir[dirindex].first * 500, dir[dirindex].second * 500);
             dirindex++;
             dirindex = dirindex % dir.size();
         }
@@ -80,10 +80,22 @@ int main()
         PhysicsEngine::getInstance()->process(usec / (1000000.000));
 
 
+        
+
+        spinner->process(usec / 1000000.000);
         for (auto& it : objects)
         {
             it->process(usec / (1000000.000));
         }
+        for (auto& it : hardobjects)
+        {
+            it->process(usec / (1000000.000));
+        }
+        
+        
+
+
+
 
 
         //getting event
@@ -100,7 +112,12 @@ int main()
 
         //draw function
         window.clear(sf::Color::Black);
+        spinner->draw(window);
         for (auto& it : objects)
+        {
+            it->draw(window);
+        }
+        for (auto& it : hardobjects)
         {
             it->draw(window);
         }
