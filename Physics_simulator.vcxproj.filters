@@ -50,6 +50,18 @@
     <ClCompile Include="source\rod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\RigidBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RigidCircleShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\RigidRectangelShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\PhysicsWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -95,6 +107,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\rod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\RigidBody.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\RigidCircleShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\RigidRectangelShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\PhysicsWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

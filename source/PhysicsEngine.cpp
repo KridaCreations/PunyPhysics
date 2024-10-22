@@ -44,12 +44,13 @@ void PhysicsEngine::removeObject(int index)
 void PhysicsEngine::process(double delta)
 {
 	f++;
-	int maxiterations = 1;
+	int maxiterations = 8;
 	delta = delta / (double)maxiterations;
 	for (int i = 0; i < maxiterations; i++)
 	{
 
-		this->solveCollisionCumulative();
+		//this->solveCollisionCumulative();
+		this->solveCollisionDirect();
 		calculatemovement(delta);
 		
 	}
@@ -59,14 +60,14 @@ void PhysicsEngine::calculatemovement(double delta)
 {
 	for (auto& it : rigidobjects)
 	{
-		it->pos = it->pos + this->mult(it->velocity, delta);
 		it->velocity = it->velocity + this->mult(this->gravity + it->acceleration, delta);
+		it->pos = it->pos + this->mult(it->velocity, delta);
 	}
 
 	for (auto& it : staticobjects)
 	{
-		it->pos = it->pos + this->mult(it->velocity, delta);
 		it->velocity = it->velocity + this->mult(it->acceleration, delta);
+		it->pos = it->pos + this->mult(it->velocity, delta);
 	}
 }
 
@@ -179,7 +180,7 @@ void PhysicsEngine::solveCollisionCumulative()
 			//distance correction
 			first->pos = (first->pos) + dir;
 			second->pos = (second->pos) - dir;
-			//impact = first->pos - second->pos;
+			
 			length = first->radius + second->radius;
 			impact = this->setmag(impact, length);
 
@@ -243,6 +244,50 @@ void PhysicsEngine::solveCollisionDirect()
 			it->pos.y = it->pos.y + (diff);
 		}
 	}
+
+
+	//detecting collision between rigid bodies and static bodies
+	std::vector<std::pair<RigidCircle*, RigidCircle*>>staticcollision;
+	for (auto itr = this->rigidobjects.begin(); itr != this->rigidobjects.end(); itr++)
+	{
+		for (auto itr2 = this->staticobjects.begin(); itr2 != this->staticobjects.end(); itr2++)
+		{
+			sf::Vector2f impact = (*itr)->pos - (*itr2)->pos;
+			double length = std::sqrtf((impact.x * impact.x) + (impact.y * impact.y));
+			if (length < ((*itr)->radius + (*itr2)->radius))
+			{
+				//std::cout << "collided " << std::endl;
+				staticcollision.push_back({ (*itr),(*itr2) });
+			}
+		}
+	}
+
+	//solving the collision between rigid bodies and static bodies
+	for (auto& it : staticcollision)
+	{
+		RigidCircle* rigid = it.first;
+		RigidCircle* stat = it.second;
+		sf::Vector2f impact = rigid->pos - stat->pos;
+		double length = std::sqrtf((impact.x * impact.x) + (impact.y * impact.y));
+
+		double overlap = (rigid->radius + stat->radius) - length;
+		sf::Vector2f dir = impact;
+		dir = this->setmag(dir, overlap);
+		rigid->pos = (rigid->pos) + dir;
+		impact = rigid->pos - stat->pos;
+
+		sf::Vector2f othervalrem = this->mult(impact, (this->dotpro(stat->velocity, impact) / (length * length)));
+		sf::Vector2f thisvalrem = this->mult(impact, (this->dotpro(rigid->velocity, impact) / (length * length)));
+		rigid->velocity = rigid->velocity - thisvalrem;
+
+
+		sf::Vector2f deltathis = this->mult((othervalrem - thisvalrem), this->coeffofrestitution) + thisvalrem;
+		rigid->velocity = rigid->velocity + deltathis;
+
+
+
+	}
+
 
 	for (auto itr = this->rigidobjects.begin(); itr != this->rigidobjects.end(); itr++)
 	{

@@ -12,7 +12,7 @@ public:
 	int count = 0;
 	double degrees = 45;
 	int len, radius,x,y;
-	Rod(double x, double y, double len, double radius);
+	Rod(double x, double y, double len, double radius,double angle);
 	~Rod();
 	void draw(sf::RenderWindow& window);
 	void process(double delta);
