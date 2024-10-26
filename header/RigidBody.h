@@ -20,16 +20,34 @@ public:
 		double momentOfInertia;
 		double coefficientOfStaticFriction;
 		double coefficientOfKineticFriction;
+		double angularvelocity = 0;
 		sf::Vector2f centerOfMass;
 		sf::Vector2f velocity;
 		sf::Vector2f acceleration;
+		sf::Vector2f position;
+		double angle = 0;
+		bool iscolliding = false;
+
 
 		type bodyType;
 		shapetypes shapetype;
+		
+
+
 
 		RigidBody(double mass,sf::Vector2f velocity,sf::Vector2f acceleration,type bodytype, double coefficientOfStaticFriction = 0, double coefficientOfKineticFriction = 0);
+		
+		double getInvMass();
+		double getInvInertia();
+		virtual void setrotation(double angle);
+		virtual void setpositon(sf::Vector2f pos);
+		virtual void translate(sf::Vector2f pos);
+		virtual void rotate(double angle);
 
+		double deg2rad(double deg);
+		double rad2deg(double rad);
+
+		
 		RigidBody() = delete;
-		//RigidBody(double mass, type bodytype, double coefficientOfStaticFriction, double coefficientOfKineticFriction);
 };
 

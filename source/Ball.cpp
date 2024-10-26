@@ -21,12 +21,10 @@ Ball::~Ball()
 
 void Ball::draw(sf::RenderWindow& window)
 {
-	//std::cout << "inside draw of ball " << std::endl;
 	window.draw(this->shape);
 }
 
 void Ball::process(double delta)
 {
 	this->shape.setPosition(this->physicsbody->pos.x, this->physicsbody->pos.y);
-	//std::cout<<"graphics pos " << this->shape.getPosition().x << " " << this->shape.getPosition().y << std::endl;
 }

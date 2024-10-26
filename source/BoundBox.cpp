@@ -17,7 +17,6 @@ void BoundBox::reset_corners()
 	this->tr = sf::Vector2f(this->x + (this->width / 2), this->y - (this->height / 2));
 	this->bl = sf::Vector2f(this->x - (this->width / 2), this->y + (this->height / 2));
 	this->br = sf::Vector2f(this->x + (this->width / 2), this->y + (this->height / 2));
-	std::cout << "pre " << (this->x) << " " << (this->width / 2) << " " << (this->y) << " " << (this->height / 2) << std::endl;
 	top = this->y - (this->height / 2);
 	bottom = this->y + (this->height / 2);
 	left = this->x - (this->width / 2);
