@@ -7,26 +7,25 @@ RigidRectangleShape::RigidRectangleShape(sf::Vector2f pos, sf::Vector2f velocity
 
 	this->length = length;
 	this->width = width;
-	this->momentOfInertia = (mass * ((width * width) + (length * length))) / 12;
+	this->momentOfInertia = (mass * ((width * width) + (length * length))) / 12.0;
 	this->shapetype = RigidBody::shapetypes::Rectangle;
-	std::cout << pos.x << " " << pos.y << std::endl;
-	std::cout << width << " " << length << std::endl;
+	//std::cout << pos.x << " " << pos.y << std::endl;
+	//std::cout << width << " " << length << std::endl;
 	this->position = pos;
 	this->points[0] = sf::Vector2f(pos.x - (width / 2.0), pos.y - (length / 2.0));
 	this->points[1] = sf::Vector2f(pos.x + (width / 2.0), pos.y - (length / 2.0));
 	this->points[2] = sf::Vector2f(pos.x + (width / 2.0), pos.y + (length / 2.0));
 	this->points[3] = sf::Vector2f(pos.x - (width / 2.0), pos.y + (length / 2.0));
-	for (int point = 0; point < this->points.size(); point++)
+	/*for (int point = 0; point < this->points.size(); point++)
 	{
 		std::cout << (this->points[point].x) << " " << (this->points[point].y) << std::endl;
-	}
+	}*/
 	this->angle = 0;
 
 }
 
 void RigidRectangleShape::rotate(double angle)
 {
-	this->angle = this->angle + angle;
 	double rad = this->deg2rad(angle);
 	for (int point = 0; point < this->points.size(); point++)
 	{
@@ -36,6 +35,7 @@ void RigidRectangleShape::rotate(double angle)
 		this->points[point] = this->points[point] + this->position;
 		//std::cout << (this->points[point].x) << " " << (this->points[point].y) << std::endl;
 	}
+	this->angle = this->angle + angle;
 	//std::cout << std::endl;
 }
 

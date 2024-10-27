@@ -21,7 +21,7 @@ void BoundBox::reset_corners()
 	bottom = this->y + (this->height / 2);
 	left = this->x - (this->width / 2);
 	right = this->x + (this->width / 2);
-	std::cout <<"reseting corners " << top << " " << bottom << " " << left << " " << right << std::endl;
+	//std::cout <<"reseting corners " << top << " " << bottom << " " << left << " " << right << std::endl;
 }
 
 void BoundBox::setnew(int width, int height, int x, int y)

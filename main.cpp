@@ -34,6 +34,11 @@ int main()
 
     Rectangle* temprectangle = new Rectangle(sf::Vector2f(200, 200), 200, 50, 10, false, RigidBody::Rigid);
     rectangles.push_back(temprectangle);
+    //temprectangle->physicsbody->rotate(10);
+
+    /*Rectangle* temprectangle6 = new Rectangle(sf::Vector2f(200, 400), 50, 50, 10, false, RigidBody::Static);
+    rectangles.push_back(temprectangle6);
+    temprectangle6->physicsbody->rotate(45);*/
 
     for (int i = 0; i < 0; i++)
     {
@@ -48,6 +53,7 @@ int main()
         int x = rand() % 500 + 100;
         int y = rand() % 500 + 100;
         Rectangle* temp = new Rectangle(sf::Vector2f(x, y),100,50, 10, false, RigidBody::Rigid);
+        temp->physicsbody->rotate(2);
         rectangles.push_back(temp);
     }
 

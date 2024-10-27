@@ -69,8 +69,8 @@ public:
 	void separateBodies(RigidBody* a, RigidBody* b, sf::Vector2f axis, double depth);
 	pointlineprojectresult distanceFromLinesegment(sf::Vector2f a, sf::Vector2f b, sf::Vector2f point);
 	
-	PhysicsWorld::collisionresult checkcollisionpolygoncircle(std::vector<sf::Vector2f>& points, sf::Vector2f center, double radius);
-	PhysicsWorld::collisionresult checkcollisionpolygonpolygon(std::vector<sf::Vector2f>& points1, std::vector<sf::Vector2f>& points2);
+	PhysicsWorld::collisionresult checkcollisionpolygoncircle(sf::Vector2f centerrect,std::vector<sf::Vector2f>& points, sf::Vector2f center, double radius);
+	PhysicsWorld::collisionresult checkcollisionpolygonpolygon(sf::Vector2f center1, std::vector<sf::Vector2f>& points1, sf::Vector2f center2, std::vector<sf::Vector2f>& points2);
 	PhysicsWorld::collisionresult checkcollisioncirclecircle(sf::Vector2f center1, double radius1, sf::Vector2f center2, double radius2);
 
 	PhysicsWorld::contactdetail findcontactdetailpolygonpolygon(std::vector<sf::Vector2f>points1, std::vector<sf::Vector2f>points2);

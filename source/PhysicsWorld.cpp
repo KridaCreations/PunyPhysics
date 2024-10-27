@@ -45,9 +45,10 @@ void PhysicsWorld::collisionDetection()
 			{
 				RigidRectangleShape* rect = static_cast<RigidRectangleShape*>(*itr1);
 				RigidCircleShape* circ = static_cast<RigidCircleShape*>(*itr2);
-				collisionresult result = this->checkcollisionpolygoncircle(rect->points, circ->position, circ->radius);
+				collisionresult result = this->checkcollisionpolygoncircle(rect->position,rect->points, circ->position, circ->radius);
 				if (result.iscollided)
 				{
+					//std::cout << __LINE__ << std::endl;
 					rect->iscolliding = true;
 					circ->iscolliding = true;
 					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
@@ -69,9 +70,10 @@ void PhysicsWorld::collisionDetection()
 			{
 				RigidRectangleShape* rect = static_cast<RigidRectangleShape*>(*itr2);
 				RigidCircleShape* circ = static_cast<RigidCircleShape*>(*itr1);
-				collisionresult result = this->checkcollisionpolygoncircle(rect->points, circ->position, circ->radius);
+				collisionresult result = this->checkcollisionpolygoncircle(rect->position,rect->points, circ->position, circ->radius);
 				if (result.iscollided)
 				{
+					//std::cout << __LINE__ << std::endl;
 					rect->iscolliding = true;
 					circ->iscolliding = true;
 					this->separateBodies((*itr2), (*itr1), result.axis, result.depth);
@@ -92,15 +94,21 @@ void PhysicsWorld::collisionDetection()
 			{
 				RigidRectangleShape* first = static_cast<RigidRectangleShape*>(*itr1);
 				RigidRectangleShape* second = static_cast<RigidRectangleShape*>(*itr2);
-				collisionresult result = this->checkcollisionpolygonpolygon(first->points, second->points);
+				collisionresult result = this->checkcollisionpolygonpolygon(first->position,first->points,second->position, second->points);
 				if (result.iscollided)
 				{
+					//std::cout << __LINE__ << std::endl;
 					first->iscolliding = true;
 					second->iscolliding = true;
 					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
 
 					contactdetail det = this->findcontactdetailpolygonpolygon(first->points,second->points);
 
+					//std::cout << "contact point count " << det.contactpointcount << std::endl;
+					//std::cout <<"normal  " << result.axis.x << " " << result.axis.y << " " << std::endl;
+					//std::cout << "contact point " << det.contactpoint1.x << " " << det.contactpoint1.y << std::endl;
+					//std::cout << "pos of object first " << first->position.x << " " << first->position.y << std::endl;
+					//std::cout << "pos of object second " << second->position.x << " " << second->position.y << std::endl;
 					//drawing collision point
 					sf::CircleShape temp1;
 					temp1.setFillColor(sf::Color::Red);
@@ -116,8 +124,17 @@ void PhysicsWorld::collisionDetection()
 						temp2.setOrigin(2, 2);
 						temp2.setPosition(det.contactpoint2);
 						(*(this->window)).draw(temp2);
-						this->resolvecollision((*itr1), (*itr2), result, det);
 					}
+					this->resolvecollision((*itr1), (*itr2), result, det);
+
+					//double avelmag = this->getmag(first->velocity);
+					//double kenergyfirst = (0.5) * (first->mass) * (avelmag * avelmag) + (0.5) * (first->momentOfInertia) * (first->angularvelocity * first->angularvelocity);
+					//std::cout << "kenergyfirst " << kenergyfirst << std::endl;
+
+					//double bvelmag = this->getmag(second->velocity);
+					//double kenergysecond = (0.5) * (second->mass) * (bvelmag * bvelmag) + (0.5) * (second->momentOfInertia) * (second->angularvelocity * second->angularvelocity);
+					//std::cout << "kenergysecond " << kenergysecond << std::endl;
+					/*std::cout << "==================" << std::endl; */
 				}
 			}
 			else if (((*itr1)->shapetype == RigidBody::Circle) && ((*itr2)->shapetype == RigidBody::Circle))
@@ -127,6 +144,7 @@ void PhysicsWorld::collisionDetection()
 				collisionresult result = this->checkcollisioncirclecircle(first->position, first->radius, second->position, second->radius);
 				if (result.iscollided)
 				{
+					//std::cout << __LINE__ << std::endl;
 					first->iscolliding = true;
 					second->iscolliding = true;
 					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
@@ -157,7 +175,7 @@ void PhysicsWorld::resolvecollision(RigidBody* a, RigidBody* b, collisionresult 
 
 
 	float e = this->coeffofrestitution;
-	std::cout << "normal " << normal.x << " " << normal.y << std::endl;
+	//std::cout << "normal " << normal.x << " " << normal.y << std::endl;
 	
 
 	std::vector<sf::Vector2f>contaclist(2);
@@ -169,34 +187,40 @@ void PhysicsWorld::resolvecollision(RigidBody* a, RigidBody* b, collisionresult 
 
 	for (int i = 0; i < contactcount; i++)
 	{
-		std::cout << contaclist[i].x << " " << contaclist[i].y << std::endl;
+		//std::cout<<"collision " << contaclist[i].x << " " << contaclist[i].y << std::endl;
 
 		sf::Vector2f ra = contaclist[i] - a->position;
 		sf::Vector2f rb = contaclist[i] - b->position;
-
+		//std::cout << "apos " << (a->position.x) << " " << (a->position.y) << std::endl;;
+		//std::cout << "bpos " << (b->position.x) << " " << (b->position.y) << std::endl;
 		ralist[i] = ra;
 		rblist[i] = rb;
 
-		sf::Vector2f raperp = sf::Vector2f(ra.y, -1.0 * ra.x);
-		sf::Vector2f rbperp = sf::Vector2f(rb.y, -1.0 * rb.x);
+		sf::Vector2f raperp = sf::Vector2f(-1.0 * ra.y, 1.0 * ra.x);
+		sf::Vector2f rbperp = sf::Vector2f(-1.0 * rb.y, 1.0 * rb.x);
 
-		std::cout << "raperp " << raperp.x << " " << raperp.y << std::endl;
-		std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
+		//std::cout << "raperp " << raperp.x << " " << raperp.y << std::endl;
+		//std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
 
-		sf::Vector2f angularlinearvelocitya = this->mult(raperp, a->angularvelocity);
-		sf::Vector2f angularlinearvelocityb = this->mult(rbperp, b->angularvelocity);
-		std::cout << "angula A " << angularlinearvelocitya.x << " " << angularlinearvelocitya.y << std::endl;
-		std::cout << "angula B" << angularlinearvelocityb.x << " " << angularlinearvelocityb.y << std::endl;
+		sf::Vector2f angularlinearvelocitya = this->mult(raperp, a->deg2rad(a->angularvelocity));
+		sf::Vector2f angularlinearvelocityb = this->mult(rbperp, b->deg2rad(b->angularvelocity));
+		//std::cout << "angula A " << angularlinearvelocitya.x << " " << angularlinearvelocitya.y << std::endl;
+		//std::cout << "angula B" << angularlinearvelocityb.x << " " << angularlinearvelocityb.y << std::endl;
 
 
-		std::cout << "vel a " << a->velocity.x << " " << a->velocity.y << std::endl;
-		std::cout << "vel b " << b->velocity.x << " " << b->velocity.y << std::endl;
+		/*std::cout << "vel a " << a->velocity.x << " " << a->velocity.y << std::endl;
+		std::cout << "vel b " << b->velocity.x << " " << b->velocity.y << std::endl;*/
 		sf::Vector2f relativevelocity = (b->velocity + angularlinearvelocityb) - (a->velocity + angularlinearvelocitya);
 
-
+		//std::cout << "relative velocity normal " << relativevelocity.x<<" "<<relativevelocity.y << std::endl;
 		float contactvelocitymag = this->dotpro(relativevelocity, normal);
 
-		std::cout << "contactvelmag " << contactvelocitymag << std::endl;
+		/*if (contactvelocitymag < 0.0)
+		{
+			continue;
+		}*/
+
+		//std::cout << "contactvelmag " << contactvelocitymag << std::endl;
 		double raperpdotn = this->dotpro(raperp, normal);
 		double rbperpdotn = this->dotpro(rbperp, normal);
 
@@ -209,23 +233,12 @@ void PhysicsWorld::resolvecollision(RigidBody* a, RigidBody* b, collisionresult 
 		double j = -1.0 * (1.0 + e) * contactvelocitymag;
 		j = j / denom;
 		j = j / (double)contactcount;
-
+		//std::cout << "restiturion " << e << std::endl;
+		//std::cout << "impulse value " << j << std::endl;
 		sf::Vector2f impulse = this->mult(normal, j);
+
 		impulselist[i] = impulse;
-		/*float raPerpDotN = FlatMath.Dot(raPerp, normal);
-		float rbPerpDotN = FlatMath.Dot(rbPerp, normal);
-
-		float denom = bodyA.InvMass + bodyB.InvMass +
-			(raPerpDotN * raPerpDotN) * bodyA.InvInertia +
-			(rbPerpDotN * rbPerpDotN) * bodyB.InvInertia;
-
-		float j = -(1f + e) * contactVelocityMag;
-		j /= denom;
-		j /= (float)contactCount;
-
-		FlatVector impulse = j * normal;
-		impulseList[i] = impulse;*/
-
+		
 	}
 
 	for (int i = 0; i < contactcount; i++)
@@ -233,47 +246,35 @@ void PhysicsWorld::resolvecollision(RigidBody* a, RigidBody* b, collisionresult 
 		sf::Vector2f impulse = impulselist[i];
 		sf::Vector2f ra = ralist[i];
 		sf::Vector2f rb = rblist[i];
+
+		sf::Vector2f raperp = sf::Vector2f(-1.0 * ra.y,1.0 * ra.x);
+		sf::Vector2f rbperp = sf::Vector2f(-1.0 * rb.y,1.0 * rb.x);
+
 		sf::Vector2f achange = this->mult(impulse, a->getInvMass());
 		double aangularchange = this->crosspro(ra, impulse) * a->getInvInertia();
-		std::cout << "achange " << achange.x << " " << achange.y << std::endl;
-		std::cout << "aangularchange " << aangularchange << std::endl;
+		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
+		//std::cout << "aangularchange " << aangularchange << std::endl;
+		aangularchange = this->dotpro(raperp, impulse) * a->getInvInertia();
+		//std::cout << "aangularchange " << aangularchange << std::endl;
 		//std::cout
 		a->velocity -= this->mult(impulse, a->getInvMass());
-		//a->angularvelocity += this->crosspro(ra, impulse) * a->getInvInertia();
+		//a->angularvelocity -= this->crosspro(ra, impulse) * a->getInvInertia();
+		a->angularvelocity -= a->rad2deg(this->dotpro(raperp, impulse)) * a->getInvInertia();
 
 		sf::Vector2f bchange = this->mult(impulse, b->getInvMass());
 		double bangularchange = this->crosspro(rb, impulse) * b->getInvInertia();
-		std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
-		std::cout << "bangularchange " << bangularchange << std::endl;
+		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
+		//std::cout << "bangularchange " << bangularchange << std::endl;
+		bangularchange = this->dotpro(rbperp, impulse) * b->getInvInertia();
+		//std::cout << "bangularchange " << bangularchange << std::endl;
 		b->velocity +=  this->mult(impulse, b->getInvMass());
 		//b->angularvelocity += this->crosspro(rb, impulse) * b->getInvInertia();
+		b->angularvelocity += b->rad2deg(this->dotpro(rbperp, impulse)) * b->getInvInertia();
 	}
 
-	/*for (int i = 0; i < contactCount; i++)
-	{
-		FlatVector impulse = impulseList[i];
-		FlatVector ra = raList[i];
-		FlatVector rb = rbList[i];
 
-		bodyA.LinearVelocity += -impulse * bodyA.InvMass;
-		bodyA.AngularVelocity += -FlatMath.Cross(ra, impulse) * bodyA.InvInertia;
-		bodyB.LinearVelocity += impulse * bodyB.InvMass;
-		bodyB.AngularVelocity += FlatMath.Cross(rb, impulse) * bodyB.InvInertia;
-	}*/
+	//std::cout << "===================" << std::endl;
 
-	/*std::cout << impulse.x << " " << impulse.y << " impulse " << std::endl;
-	std::cout << (a->velocity.x) << " " << (a->velocity.y) << " velocity a " << std::endl;
-	std::cout << (b->velocity.x) << " " << (b->velocity.y) << " velocity a " << std::endl;
-	std::cout << (a->getInvMass()) << " invmass a" << std::endl;
-	std::cout << (b->getInvMass()) << " invmass b" << std::endl;*/
-	/*sf::Vector2f changea = this->mult(impulse, a->getInvMass());
-	sf::Vector2f changeb = this->mult(impulse, b->getInvMass() * -1.0);*/
-	/*std::cout << (changea.x) << " " << (changea.y) << std::endl;
-	std::cout << (changeb.x) << " " << (changeb.y) << std::endl;*/
-
-	std::cout << "===================" << std::endl;
-	/*a->velocity += this->mult(impulse, a->getInvMass());
-	b->velocity -= this->mult(impulse, b->getInvMass());*/
 
 
 
@@ -353,7 +354,7 @@ double PhysicsWorld::getmagsquared(sf::Vector2f a)
 	return (a.x * a.x) + (a.y * a.y);
 }
 
-PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(std::vector<sf::Vector2f>& points, sf::Vector2f center, double radius)
+PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(sf::Vector2f centerrect ,std::vector<sf::Vector2f>& points, sf::Vector2f center, double radius)
 {
 	PhysicsWorld::collisionresult result;
 	for (int point = 0; point < points.size(); point++)
@@ -374,16 +375,21 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(std::vec
 
 
 		double depth;
-		if (abs(circle.second - polygon.first) < abs(circle.first - polygon.second))
-			depth = circle.second - polygon.first;
-		else
-			depth = circle.first - polygon.second;
-
-		if (abs(result.depth) > abs(depth))
+		depth = std::min((polygon.second - circle.first), (circle.second - polygon.first));
+		if (result.depth > depth)
 		{
 			result.depth = depth;
 			result.axis = axis;
 		}
+		/*if (abs(circle.second - polygon.first) < abs(circle.first - polygon.second))
+			depth = circle.second - polygon.first;
+		else
+			depth = circle.first - polygon.second;
+		if (abs(result.depth) > abs(depth))
+		{
+			result.depth = depth;
+			result.axis = axis;
+		}*/
 
 		axis = center - a;
 		axis = this->setmag(axis, 1);
@@ -396,7 +402,14 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(std::vec
 			return result; //gap detected
 		}
 		
-		if (abs(circle.second - polygon.first) < abs(circle.first - polygon.second))
+		depth = std::min((polygon.second - circle.first), (circle.second - polygon.first));
+		if (result.depth > depth)
+		{
+			result.depth = depth;
+			result.axis = axis;
+		}
+
+		/*if (abs(circle.second - polygon.first) < abs(circle.first - polygon.second))
 			depth = circle.second - polygon.first;
 		else
 			depth = circle.first - polygon.second;
@@ -405,7 +418,13 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(std::vec
 		{
 			result.depth = depth;
 			result.axis = axis;
-		}
+		}*/
+	}
+
+	sf::Vector2f direction = centerrect - center;
+	if (this->dotpro(direction, result.axis) < 0.0)
+	{
+		result.axis = this->mult(result.axis, -1);
 	}
 	result.iscollided = true;
 	return result;
@@ -413,7 +432,7 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(std::vec
 	
 }
 
-PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygonpolygon(std::vector<sf::Vector2f>& points1, std::vector<sf::Vector2f>& points2)
+PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygonpolygon(sf::Vector2f center1,std::vector<sf::Vector2f>& points1,sf::Vector2f center2, std::vector<sf::Vector2f>& points2)
 {
 	PhysicsWorld::collisionresult result;
 	for (int point = 0; point < points1.size(); point++)
@@ -432,12 +451,8 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygonpolygon(std::ve
 			return result; //gap detected
 		}
 		double depth;
-		if (abs(polygon2.second - polygon1.first) < abs(polygon2.first - polygon1.second))
-			depth = polygon2.second - polygon1.first;
-		else
-			depth = polygon2.first - polygon1.second;
-
-		if (abs(result.depth) > abs(depth))
+		depth = std::min(polygon1.second - polygon2.first, polygon2.second - polygon1.first);
+		if (depth < result.depth)
 		{
 			result.depth = depth;
 			result.axis = axis;
@@ -458,18 +473,21 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygonpolygon(std::ve
 			result.iscollided = false;
 			return result; //gap detected
 		}
-
 		double depth;
-		if (abs(polygon2.second - polygon1.first) < abs(polygon2.first - polygon1.second))
-			depth = polygon2.second - polygon1.first;
-		else
-			depth = polygon2.first - polygon1.second;
-
-		if (abs(result.depth) > abs(depth))
+		depth = std::min(polygon1.second - polygon2.first, polygon2.second - polygon1.first);
+		if (depth < result.depth)
 		{
 			result.depth = depth;
-			result.axis = axis;
+			result.axis = this->mult(axis,1);
 		}
+		
+	}
+
+
+	sf::Vector2f direction = center1 - center2;
+	if (this->dotpro(direction, result.axis) < 0.0)
+	{
+		result.axis = this->mult(result.axis, -1);
 	}
 	result.iscollided = true;
 	return result;
@@ -489,7 +507,17 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisioncirclecircle(sf::Vecto
 		this->setmag(axis, 1);
 		result.depth = (radiisum - distance);
 		result.axis = axis;
+
+		sf::Vector2f direction = center1 - center2;
+		if (this->dotpro(direction, result.axis) < 0.0)
+		{
+			result.axis = this->mult(result.axis, -1);
+		}
+		result.iscollided = true;
 	}
+
+	
+
 	return result;
 }
 
@@ -508,6 +536,9 @@ PhysicsWorld::contactdetail PhysicsWorld::findcontactdetailpolygonpolygon(std::v
 			sf::Vector2f a = points2[point2];
 			sf::Vector2f b = points2[(point2 + 1) % points2.size()];
 
+			/*std::cout << "point 1 " << p.x << " " << p.y << std::endl;
+			std::cout << "point 2->1 " << a.x << " " << a.y << std::endl;
+			std::cout << "point 2->2 " << b.x << " " << b.y << std::endl;*/
 			pointlineprojectresult tempres = this->distanceFromLinesegment(a, b, p);
 			if (nearlyequal(tempres.distance, mindis))
 			{
@@ -535,6 +566,9 @@ PhysicsWorld::contactdetail PhysicsWorld::findcontactdetailpolygonpolygon(std::v
 			sf::Vector2f a = points1[point1];
 			sf::Vector2f b = points1[(point1 + 1) % points1.size()];
 
+			/*std::cout << "point 2 " << p.x << " " << p.y << std::endl;
+			std::cout << "point 1->1 " << a.x << " " << a.y << std::endl;
+			std::cout << "point 1->2 " << b.x << " " << b.y << std::endl;*/
 			pointlineprojectresult tempres = this->distanceFromLinesegment(a, b, p);
 			if (nearlyequal(tempres.distance, mindis))
 			{
@@ -560,7 +594,7 @@ PhysicsWorld::contactdetail PhysicsWorld::findcontactdetailpolygonpolygon(std::v
 
 PhysicsWorld::contactdetail PhysicsWorld::findcontactdetailpolygoncircle(std::vector<sf::Vector2f> points, sf::Vector2f center, double radius)
 {
-	contactdetail result;
+	contactdetail result;	
 	result.contactpointcount = 0;
 	double mindis = LLONG_MAX;
 
@@ -649,11 +683,11 @@ void PhysicsWorld::separateBodies(RigidBody* a, RigidBody* b,sf::Vector2f axis,d
 	}
 	else if (b->bodyType == RigidBody::Static)
 	{
-		a->translate(this->mult(axis, depth));
+		a->translate(this->mult(axis, depth * 1.0));
 	}
 	else
 	{
-		a->translate(this->mult(axis,depth/2.0));
+		a->translate(this->mult(axis, (depth * 1.0) / 2.0));
 		b->translate(this->mult(axis, (depth * -1.0) / 2.0));
 	}
 }

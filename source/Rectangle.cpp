@@ -38,7 +38,8 @@ void Rectangle::process(double delta)
 	this->shape.setPosition(this->physicsbody->position);
 	if (this->physicsbody->iscolliding)
 	{
-		this->shape.setOutlineColor(sf::Color::White);
+		//this->shape.setOutlineColor(sf::Color::White);
+
 	}
 	else
 	{
