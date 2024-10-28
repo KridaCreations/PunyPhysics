@@ -49,9 +49,10 @@ public:
 	void process(double delta);
 
 	int framecount = 0;
-	std::set<RigidBody*>bodies;
+	//std::set<RigidBody*>bodies;
+	std::vector<RigidBody*>bodies;
 	sf::Vector2f gravity = sf::Vector2f(0.0, 0.0);
-	double coeffofrestitution = 1;
+	double coeffofrestitution = 0.8;
 
 
 	sf::RenderWindow* window;

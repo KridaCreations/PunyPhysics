@@ -4,13 +4,14 @@
 
 void PhysicsWorld::addbody(RigidBody* body)
 {
-	this->bodies.insert(body);
+	//this->bodies.insert(body);
+	this->bodies.push_back(body);
 
 }
 
 void PhysicsWorld::removeBody(RigidBody* body)
 {
-	this->bodies.erase(body);
+	//this->bodies.erase(body);
 }
 
 void PhysicsWorld::process(double delta)
@@ -27,14 +28,17 @@ void PhysicsWorld::process(double delta)
 
 void PhysicsWorld::collisionDetection()
 {
+	//std::cout<<
 	for (auto itr = begin(bodies); itr != bodies.end(); itr++)
 	{
 		(*itr)->iscolliding = false;
 	}
+	//std::cout << "new" << std::endl;
 	for (auto itr1 = begin(bodies);itr1 != bodies.end(); itr1++)
 	{
 		for (auto itr2 = next(itr1); itr2 != bodies.end(); itr2++ )
 		{
+			//std::cout << "here" << std::endl;
 			if (((*itr1)->bodyType == RigidBody::Static) && ((*itr2)->bodyType == RigidBody::Static))
 			{
 				continue;
@@ -51,9 +55,11 @@ void PhysicsWorld::collisionDetection()
 					//std::cout << __LINE__ << std::endl;
 					rect->iscolliding = true;
 					circ->iscolliding = true;
+					//std::cout << "colliding rect " << rect->position.x << " " << rect->position.y << std::endl;
+					//std::cout << "colliding circle " << circ->position.x << " " << circ->position.y << std::endl;
 					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
 					contactdetail det = this->findcontactdetailpolygoncircle(rect->points,circ->position,circ->radius);
-					
+					//std::cout<<"distance "<<
 					//drawing collision point
 					sf::CircleShape temp;
 					temp.setFillColor(sf::Color::Red);
@@ -76,6 +82,8 @@ void PhysicsWorld::collisionDetection()
 					//std::cout << __LINE__ << std::endl;
 					rect->iscolliding = true;
 					circ->iscolliding = true;
+					//std::cout << "colliding rect " << rect->position.x << " " << rect->position.y << std::endl;
+					//std::cout << "colliding circle " << circ->position.x << " " << circ->position.y << std::endl;
 					this->separateBodies((*itr2), (*itr1), result.axis, result.depth);
 
 					contactdetail det = this->findcontactdetailpolygoncircle(rect->points, circ->position, circ->radius);
@@ -87,7 +95,7 @@ void PhysicsWorld::collisionDetection()
 					temp.setOrigin(2,2);
 					temp.setPosition(det.contactpoint1);
 					(*(this->window)).draw(temp);
-					this->resolvecollision((*itr1), (*itr2), result, det);
+					this->resolvecollision((*itr2), (*itr1), result, det);
 				}
 			}
 			else if (((*itr1)->shapetype == RigidBody::Rectangle) && ((*itr2)->shapetype == RigidBody::Rectangle))
@@ -158,7 +166,7 @@ void PhysicsWorld::collisionDetection()
 					temp.setOrigin(2, 2);
 					temp.setPosition(det.contactpoint1);
 					(*(this->window)).draw(temp);
-					this->resolvecollision((*itr2), (*itr1), result, det);
+					this->resolvecollision((*itr1), (*itr2), result, det);
 				}
 			}
 		}
@@ -208,17 +216,17 @@ void PhysicsWorld::resolvecollision(RigidBody* a, RigidBody* b, collisionresult 
 		//std::cout << "angula B" << angularlinearvelocityb.x << " " << angularlinearvelocityb.y << std::endl;
 
 
-		/*std::cout << "vel a " << a->velocity.x << " " << a->velocity.y << std::endl;
-		std::cout << "vel b " << b->velocity.x << " " << b->velocity.y << std::endl;*/
+		//std::cout << "vel a " << a->velocity.x << " " << a->velocity.y << std::endl;
+		//std::cout << "vel b " << b->velocity.x << " " << b->velocity.y << std::endl;
 		sf::Vector2f relativevelocity = (b->velocity + angularlinearvelocityb) - (a->velocity + angularlinearvelocitya);
 
 		//std::cout << "relative velocity normal " << relativevelocity.x<<" "<<relativevelocity.y << std::endl;
 		float contactvelocitymag = this->dotpro(relativevelocity, normal);
 
-		/*if (contactvelocitymag < 0.0)
+		if (contactvelocitymag < 0.0)
 		{
 			continue;
-		}*/
+		}
 
 		//std::cout << "contactvelmag " << contactvelocitymag << std::endl;
 		double raperpdotn = this->dotpro(raperp, normal);
@@ -369,6 +377,7 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(sf::Vect
 		
 		if ((polygon.second <= circle.first) || (circle.second <= polygon.first))
 		{
+			
 			result.iscollided = false;
 			return result; //gap detected
 		}
@@ -378,19 +387,11 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(sf::Vect
 		depth = std::min((polygon.second - circle.first), (circle.second - polygon.first));
 		if (result.depth > depth)
 		{
+			//std::cout << __LINE__ << std::endl;
 			result.depth = depth;
 			result.axis = axis;
 		}
-		/*if (abs(circle.second - polygon.first) < abs(circle.first - polygon.second))
-			depth = circle.second - polygon.first;
-		else
-			depth = circle.first - polygon.second;
-		if (abs(result.depth) > abs(depth))
-		{
-			result.depth = depth;
-			result.axis = axis;
-		}*/
-
+		
 		axis = center - a;
 		axis = this->setmag(axis, 1);
 		polygon = this->projectpolygon(axis, points);
@@ -405,25 +406,17 @@ PhysicsWorld::collisionresult PhysicsWorld::checkcollisionpolygoncircle(sf::Vect
 		depth = std::min((polygon.second - circle.first), (circle.second - polygon.first));
 		if (result.depth > depth)
 		{
+			//std::cout << __LINE__ << std::endl;
 			result.depth = depth;
 			result.axis = axis;
 		}
 
-		/*if (abs(circle.second - polygon.first) < abs(circle.first - polygon.second))
-			depth = circle.second - polygon.first;
-		else
-			depth = circle.first - polygon.second;
-
-		if (abs(result.depth) > abs(depth))
-		{
-			result.depth = depth;
-			result.axis = axis;
-		}*/
 	}
 
 	sf::Vector2f direction = centerrect - center;
 	if (this->dotpro(direction, result.axis) < 0.0)
 	{
+		//std::cout << __LINE__ << std::endl;
 		result.axis = this->mult(result.axis, -1);
 	}
 	result.iscollided = true;
@@ -612,6 +605,7 @@ PhysicsWorld::contactdetail PhysicsWorld::findcontactdetailpolygoncircle(std::ve
 			mindis = tempres.distance;
 		}
 	}
+	//std::cout << "min dis " << mindis << std::endl;
 	return result;
 }
 

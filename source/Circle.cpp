@@ -30,7 +30,7 @@ void Circle::process(double delta)
 	this->shape.setRotation(this->physicsbody->angle);
 	if (this->physicsbody->iscolliding)
 	{
-		this->shape.setOutlineColor(sf::Color::White);
+		//this->shape.setOutlineColor(sf::Color::White);
 		//std::cout << "true" << std::endl;
 	}
 	else

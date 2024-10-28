@@ -22,7 +22,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width,height), "Window Title", sf::Style::Titlebar | sf::Style::Close);
     //win = &window;
     PhysicsWorld::getInstance()->window = &window;
-    PhysicsWorld::getInstance()->gravity = sf::Vector2f(0, 500);
+    PhysicsWorld::getInstance()->gravity = sf::Vector2f(0, 1000);
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
@@ -32,30 +32,54 @@ int main()
     //circles.push_back(tempcircle1);
     //circles.push_back(tempcircle2);
 
-    Rectangle* temprectangle = new Rectangle(sf::Vector2f(200, 200), 200, 50, 10, false, RigidBody::Rigid);
-    rectangles.push_back(temprectangle);
+    //Rectangle* temprectangle = new Rectangle(sf::Vector2f(200, 200), 200, 50, 10, false, RigidBody::Rigid);
+    //rectangles.push_back(temprectangle);
     //temprectangle->physicsbody->rotate(10);
 
     /*Rectangle* temprectangle6 = new Rectangle(sf::Vector2f(200, 400), 50, 50, 10, false, RigidBody::Static);
     rectangles.push_back(temprectangle6);
     temprectangle6->physicsbody->rotate(45);*/
 
-    for (int i = 0; i < 0; i++)
+
+    std::vector<sf::Color>colorlist = {
+        sf::Color::Blue,
+        sf::Color::Cyan,
+        sf::Color::Green,
+        sf::Color::Magenta,
+        sf::Color::Red,
+        //sf::Color::White,
+        sf::Color::Yellow
+    };
+
+    for (int i = 0; i <10; i++)
     {
         int x = rand() % 500 + 100;
         int y = rand() % 500 + 100;
-        Circle*  temp = new Circle(sf::Vector2f(x,y), 25, 10, false, RigidBody::Rigid);
+        int col = rand() % colorlist.size();
+        Circle*  temp = new Circle(sf::Vector2f(x,y), 40, 10, false, RigidBody::Rigid,colorlist[col]);
         circles.push_back(temp);
     }
 
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 10; i++)
     {
         int x = rand() % 500 + 100;
         int y = rand() % 500 + 100;
-        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),100,50, 10, false, RigidBody::Rigid);
+        int col = rand() % colorlist.size();
+        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),80,80, 10, false, RigidBody::Rigid, colorlist[col]);
         temp->physicsbody->rotate(2);
         rectangles.push_back(temp);
     }
+
+   /* Circle* ball = new Circle(sf::Vector2f(300, 200), 90, 10, false, RigidBody::Rigid,sf::Color::Red);
+    circles.push_back(ball);*/
+
+    /*Rectangle* rect = new Rectangle(sf::Vector2f(300, 300), 200, 40,10, false, RigidBody::Rigid, sf::Color::Red);
+    rectangles.push_back(rect);*/
+
+    Rectangle* bar = new Rectangle(sf::Vector2f(450, 450), 700, 50, 1000, false, RigidBody::Static);
+    bar->physicsbody->angularvelocity = 10;
+    //bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
+    rectangles.push_back(bar);
 
 
     //forming boundaries////////////////////
@@ -89,15 +113,18 @@ int main()
         sf::Time deltatime = gameClock.getElapsedTime(); //deltatime
         double usec = deltatime.asMicroseconds();
         gameClock.restart(); //timer restart
-        PhysicsWorld::getInstance()->process(usec / (1000000.000));
+        //std::cout << (usec / 1000000.000) << std::endl;
+        double deltatimeconst = (usec / 1000000.00);// 0.0005;
+        //double deltatimeconst = 0.0005;
+        PhysicsWorld::getInstance()->process(deltatimeconst);
 
         for (auto& it : circles)
         {
-            it->process(usec / 1000000.000);
+            it->process(deltatimeconst);
         }
         for (auto& it : rectangles)
         {
-            it->process(usec / 1000000.000);
+            it->process(deltatimeconst);
         }
 
 
