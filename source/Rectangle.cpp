@@ -25,15 +25,19 @@ void Rectangle::draw(sf::RenderWindow& window)
 		this->boundbox.setPoint(point, this->physicsbody->points[point]);
 	}
 	this->boundbox.setFillColor(sf::Color::Transparent);
-	this->boundbox.setOutlineColor(sf::Color::Red);
+	this->boundbox.setOutlineColor(sf::Color::White);
 	this->boundbox.setOutlineThickness(2);
-	window.draw(this->shape);
-	//window.draw(this->boundbox);
+	//window.draw(this->shape);
+	window.draw(this->boundbox);
 }
 
 void Rectangle::process(double delta)
 {
 	//retireving the position and rotation from physics world
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+	{
+		
+	}
 	this->shape.setRotation(this->physicsbody->angle);
 	this->shape.setPosition(this->physicsbody->position);
 	if (this->physicsbody->iscolliding)

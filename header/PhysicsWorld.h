@@ -40,6 +40,8 @@ public:
 	double getmag(sf::Vector2f vect);
 	
 
+	void resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, collisionresult collision, contactdetail contact);
+
 	void calculatemovement(double delta);
 	void collisionDetection();
 
@@ -52,8 +54,8 @@ public:
 	//std::set<RigidBody*>bodies;
 	std::vector<RigidBody*>bodies;
 	sf::Vector2f gravity = sf::Vector2f(0.0, 0.0);
-	double coeffofrestitution = 0.8;
-
+	double coeffofrestitution = 1;
+	//sf::Event event ;
 
 	sf::RenderWindow* window;
 

@@ -25,6 +25,9 @@ public:
 		sf::Vector2f velocity;
 		sf::Vector2f acceleration;
 		sf::Vector2f position;
+
+		double kineticfriction = 0.6;
+		double staticfriction = 0.0;
 		double angle = 0;
 		bool iscolliding = false;
 

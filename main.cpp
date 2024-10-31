@@ -51,35 +51,45 @@ int main()
         sf::Color::Yellow
     };
 
-    for (int i = 0; i <10; i++)
+    for (int i = 0; i < 0; i++)
     {
-        int x = rand() % 500 + 100;
-        int y = rand() % 500 + 100;
+        int x = rand() % 400 + 100;
+        int y = rand() % 400 + 100;
         int col = rand() % colorlist.size();
-        Circle*  temp = new Circle(sf::Vector2f(x,y), 40, 10, false, RigidBody::Rigid,colorlist[col]);
+        Circle*  temp = new Circle(sf::Vector2f(x,y), 20, 100, false, RigidBody::Rigid,colorlist[col]);
         circles.push_back(temp);
     }
 
     for (int i = 0; i < 10; i++)
     {
-        int x = rand() % 500 + 100;
-        int y = rand() % 500 + 100;
+        //int x = rand() % 500 + 100;
+        //int y = rand() % 500 + 100;
+        int x = 300;
+        int y = 300;
         int col = rand() % colorlist.size();
-        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),80,80, 10, false, RigidBody::Rigid, colorlist[col]);
-        temp->physicsbody->rotate(2);
+        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),40,50, 100, false, RigidBody::Rigid, colorlist[col]);
+        //temp->physicsbody->rotate(2);
         rectangles.push_back(temp);
     }
 
    /* Circle* ball = new Circle(sf::Vector2f(300, 200), 90, 10, false, RigidBody::Rigid,sf::Color::Red);
     circles.push_back(ball);*/
 
-    /*Rectangle* rect = new Rectangle(sf::Vector2f(300, 300), 200, 40,10, false, RigidBody::Rigid, sf::Color::Red);
-    rectangles.push_back(rect);*/
+    Rectangle* rect = new Rectangle(sf::Vector2f(200, 100), 40, 50,10, false, RigidBody::Rigid, sf::Color::Red);
+    rectangles.push_back(rect);
 
-    Rectangle* bar = new Rectangle(sf::Vector2f(450, 450), 700, 50, 1000, false, RigidBody::Static);
-    bar->physicsbody->angularvelocity = 10;
+    Rectangle* bar = new Rectangle(sf::Vector2f(300, 300), 400, 50, 1000, false, RigidBody::Static);
+    //bar->physicsbody->angularvelocity = 40;
     //bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
+    bar->physicsbody->rotate(20);
     rectangles.push_back(bar);
+
+
+    Rectangle* bar2 = new Rectangle(sf::Vector2f(600, 600), 400, 50, 1000, false, RigidBody::Static);
+    //bar2->physicsbody->angularvelocity = 40;
+    //bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
+    bar2->physicsbody->rotate(-20);
+    rectangles.push_back(bar2);
 
 
     //forming boundaries////////////////////
@@ -116,6 +126,7 @@ int main()
         //std::cout << (usec / 1000000.000) << std::endl;
         double deltatimeconst = (usec / 1000000.00);// 0.0005;
         //double deltatimeconst = 0.0005;
+        //std::cout << deltatimeconst << std::endl;
         PhysicsWorld::getInstance()->process(deltatimeconst);
 
         for (auto& it : circles)
@@ -139,6 +150,24 @@ int main()
             {
                 cout << "close button clicked " << endl;
                 window.close();
+            }
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::G)
+                {
+                    for (auto& it : rectangles)
+                    {
+                        for (int point = 0; point < it->physicsbody->points.size(); point++)
+                        {
+                            sf::Vector2f a = it->physicsbody->points[point];
+                            sf::Vector2f b = it->physicsbody->points[(point + 1) % it->physicsbody->points.size()];
+                            std::cout << (PhysicsWorld::getInstance()->getmag(a - b)) << " ";
+                        }
+                        
+                        std::cout <<std::endl;
+                    }
+                    std::cout <<"=============" << std::endl;
+                }
             }
 
         }

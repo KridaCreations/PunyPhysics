@@ -5,10 +5,12 @@ Circle::Circle(sf::Vector2f pos, double radius, double mass, bool control,RigidB
 {
 	this->physicsbody = new RigidCircleShape(pos, sf::Vector2f(0, 0), sf::Vector2f(0, 0), radius, mass, bodytype);
 	
-	this->shape.setFillColor(color);
+	//this->shape.setFillColor(color);
+	this->shape.setFillColor(sf::Color::Transparent);
 	this->shape.setOrigin(sf::Vector2f(radius, radius));
 	this->shape.setRadius(radius);
 	this->shape.setOutlineThickness(2);
+	this->shape.setPointCount(6);
 	this->control = control;
 	PhysicsWorld::getInstance()->addbody(this->physicsbody);
 }
@@ -30,13 +32,14 @@ void Circle::process(double delta)
 	this->shape.setRotation(this->physicsbody->angle);
 	if (this->physicsbody->iscolliding)
 	{
-		//this->shape.setOutlineColor(sf::Color::White);
+		this->shape.setOutlineColor(sf::Color::White);
 		//std::cout << "true" << std::endl;
 	}
 	else
 	{
 		//std::cout << "flase" << std::endl;
-		this->shape.setOutlineColor(sf::Color::Transparent);
+		//this->shape.setOutlineColor(sf::Color::Transparent);
+		this->shape.setOutlineColor(sf::Color::White);
 	}
 
 	if (this->control)
