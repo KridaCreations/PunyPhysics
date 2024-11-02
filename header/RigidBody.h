@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "pum.h"
 
 class RigidBody
 {
@@ -21,13 +22,13 @@ public:
 		double coefficientOfStaticFriction;
 		double coefficientOfKineticFriction;
 		double angularvelocity = 0;
-		sf::Vector2f centerOfMass;
-		sf::Vector2f velocity;
-		sf::Vector2f acceleration;
-		sf::Vector2f position;
+		pum::vector2d centerOfMass;
+		pum::vector2d velocity;
+		pum::vector2d acceleration;
+		pum::vector2d position;
 
 		double kineticfriction = 0.6;
-		double staticfriction = 0.0;
+		double staticfriction = 0.4;
 		double angle = 0;
 		bool iscolliding = false;
 
@@ -38,13 +39,13 @@ public:
 
 
 
-		RigidBody(double mass,sf::Vector2f velocity,sf::Vector2f acceleration,type bodytype, double coefficientOfStaticFriction = 0, double coefficientOfKineticFriction = 0);
+		RigidBody(double mass,pum::vector2d velocity,pum::vector2d acceleration,type bodytype, double coefficientOfStaticFriction = 0, double coefficientOfKineticFriction = 0);
 		
 		double getInvMass();
 		double getInvInertia();
 		virtual void setrotation(double angle);
-		virtual void setpositon(sf::Vector2f pos);
-		virtual void translate(sf::Vector2f pos);
+		virtual void setpositon(pum::vector2d pos);
+		virtual void translate(pum::vector2d pos);
 		virtual void rotate(double angle);
 
 		double deg2rad(double deg);

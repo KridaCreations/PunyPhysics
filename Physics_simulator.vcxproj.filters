@@ -31,25 +31,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="source\RigidCircle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\PhysicsEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\BoundBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\Ball.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="source\staticball.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\rod.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\RigidBody.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -95,24 +77,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imstb_truetype.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\RigidCircle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\PhysicsEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\BoundBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\Ball.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\staticball.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="header\rod.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\RigidBody.h">

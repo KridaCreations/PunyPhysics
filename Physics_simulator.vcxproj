@@ -111,10 +111,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\INAKUM21\Desktop\mycomp\cppProjects\punnyphysics\punnymathsrc\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\INAKUM21\Desktop\mycomp\cppProjects\punnyphysics\punnymathsrc\src\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -125,14 +127,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\INAKUM21\Desktop\mycomp\cppProjects\punnyphysics\punnymathsrc\src;$(SolutionDir)\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;punnymath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\INAKUM21\Desktop\mycomp\cppProjects\punnyphysics\punnymathsrc\src\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -143,32 +146,20 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="source\Ball.cpp" />
     <ClCompile Include="source\Circle.cpp" />
     <ClCompile Include="source\PhysicsWorld.cpp" />
     <ClCompile Include="source\Rectangle.cpp" />
     <ClCompile Include="source\RigidBody.cpp" />
-    <ClCompile Include="source\BoundBox.cpp" />
-    <ClCompile Include="source\PhysicsEngine.cpp" />
-    <ClCompile Include="source\RigidCircle.cpp" />
     <ClCompile Include="source\RigidCircleShape.cpp" />
     <ClCompile Include="source\RigidRectangelShape.cpp" />
-    <ClCompile Include="source\rod.cpp" />
-    <ClCompile Include="source\staticball.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="header\Ball.h" />
     <ClInclude Include="header\Circle.h" />
     <ClInclude Include="header\PhysicsWorld.h" />
     <ClInclude Include="header\Rectangle.h" />
     <ClInclude Include="header\RigidBody.h" />
-    <ClInclude Include="header\BoundBox.h" />
-    <ClInclude Include="header\PhysicsEngine.h" />
-    <ClInclude Include="header\RigidCircle.h" />
     <ClInclude Include="header\RigidCircleShape.h" />
     <ClInclude Include="header\RigidRectangelShape.h" />
-    <ClInclude Include="header\rod.h" />
-    <ClInclude Include="header\staticball.h" />
     <ClInclude Include="imgui\imconfig-SFML.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui-SFML.h" />

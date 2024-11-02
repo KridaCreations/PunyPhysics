@@ -2,7 +2,7 @@
 #include <iostream>
 #include "../header/PhysicsWorld.h"
 
-RigidRectangleShape::RigidRectangleShape(sf::Vector2f pos, sf::Vector2f velocity, sf::Vector2f acceleration,double width,double length,double mass,type bodytype, double coefficientOfStaticFriction , double coefficientOfKineticFriction)
+RigidRectangleShape::RigidRectangleShape(pum::vector2d pos, pum::vector2d velocity, pum::vector2d acceleration,double width,double length,double mass,type bodytype, double coefficientOfStaticFriction , double coefficientOfKineticFriction)
 	:RigidBody(mass,velocity,acceleration, bodytype, coefficientOfStaticFriction, coefficientOfKineticFriction)
 {
 
@@ -12,10 +12,10 @@ RigidRectangleShape::RigidRectangleShape(sf::Vector2f pos, sf::Vector2f velocity
 	this->shapetype = RigidBody::shapetypes::Rectangle;
 	
 	this->position = pos;
-	this->points[0] = sf::Vector2f(pos.x - (width / 2.0), pos.y - (length / 2.0));
-	this->points[1] = sf::Vector2f(pos.x + (width / 2.0), pos.y - (length / 2.0));
-	this->points[2] = sf::Vector2f(pos.x + (width / 2.0), pos.y + (length / 2.0));
-	this->points[3] = sf::Vector2f(pos.x - (width / 2.0), pos.y + (length / 2.0));
+	this->points[0] = pum::vector2d(pos.x - (width / 2.0), pos.y - (length / 2.0));
+	this->points[1] = pum::vector2d(pos.x + (width / 2.0), pos.y - (length / 2.0));
+	this->points[2] = pum::vector2d(pos.x + (width / 2.0), pos.y + (length / 2.0));
+	this->points[3] = pum::vector2d(pos.x - (width / 2.0), pos.y + (length / 2.0));
 	
 	this->angle = 0;
 
@@ -25,11 +25,11 @@ void RigidRectangleShape::rotate(double angle)
 {
 	this->angle = this->angle + angle;
 
-	sf::Vector2f newpos = this->position;
-	this->points[0] = sf::Vector2f(newpos.x - (width / 2.0), newpos.y - (length / 2.0));
-	this->points[1] = sf::Vector2f(newpos.x + (width / 2.0), newpos.y - (length / 2.0));
-	this->points[2] = sf::Vector2f(newpos.x + (width / 2.0), newpos.y + (length / 2.0));
-	this->points[3] = sf::Vector2f(newpos.x - (width / 2.0), newpos.y + (length / 2.0));
+	pum::vector2d newpos = this->position;
+	this->points[0] = pum::vector2d(newpos.x - (width / 2.0), newpos.y - (length / 2.0));
+	this->points[1] = pum::vector2d(newpos.x + (width / 2.0), newpos.y - (length / 2.0));
+	this->points[2] = pum::vector2d(newpos.x + (width / 2.0), newpos.y + (length / 2.0));
+	this->points[3] = pum::vector2d(newpos.x - (width / 2.0), newpos.y + (length / 2.0));
 
 
 	//again rotating by the body angle
@@ -37,23 +37,27 @@ void RigidRectangleShape::rotate(double angle)
 	for (int point = 0; point < this->points.size(); point++)
 	{
 		this->points[point] = this->points[point] - this->position;
-		sf::Vector2f temp = this->points[point];
-		this->points[point] = sf::Vector2f(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
+		pum::vector2d temp = this->points[point];
+		this->points[point] = pum::vector2d(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
 		this->points[point] = this->points[point] + this->position;
 	}
 	//std::cout << std::endl;
 }
 
-void RigidRectangleShape::translate(sf::Vector2f pos)
+void RigidRectangleShape::translate(pum::vector2d pos)
 {
 	this->position = this->position + pos;//changing the position
-
+	/*if (bodyType == RigidBody::Rigid)
+	{
+		std::cout << this->position.x << " " << this->position.y << std::endl;
+	}
+	std::cout << std::endl;*/
 	//freshly deciding the body position
-	sf::Vector2f newpos = this->position;
-	this->points[0] = sf::Vector2f(newpos.x - (width / 2.0), newpos.y - (length / 2.0));
-	this->points[1] = sf::Vector2f(newpos.x + (width / 2.0), newpos.y - (length / 2.0));
-	this->points[2] = sf::Vector2f(newpos.x + (width / 2.0), newpos.y + (length / 2.0));
-	this->points[3] = sf::Vector2f(newpos.x - (width / 2.0), newpos.y + (length / 2.0));
+	pum::vector2d newpos = this->position;
+	this->points[0] = pum::vector2d(newpos.x - (width / 2.0), newpos.y - (length / 2.0));
+	this->points[1] = pum::vector2d(newpos.x + (width / 2.0), newpos.y - (length / 2.0));
+	this->points[2] = pum::vector2d(newpos.x + (width / 2.0), newpos.y + (length / 2.0));
+	this->points[3] = pum::vector2d(newpos.x - (width / 2.0), newpos.y + (length / 2.0));
 
 
 	//again rotating by the body angle
@@ -61,13 +65,13 @@ void RigidRectangleShape::translate(sf::Vector2f pos)
 	for (int point = 0; point < this->points.size(); point++)
 	{
 		this->points[point] = this->points[point] - this->position;
-		sf::Vector2f temp = this->points[point];
-		this->points[point] = sf::Vector2f(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
+		pum::vector2d temp = this->points[point];
+		this->points[point] = pum::vector2d(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
 		this->points[point] = this->points[point] + this->position;
 	}
 }
 
-void RigidRectangleShape::setpositon(sf::Vector2f pos)
+void RigidRectangleShape::setpositon(pum::vector2d pos)
 {
 	for (int point = 0; point < this->points.size(); point++)
 	{

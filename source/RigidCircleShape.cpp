@@ -1,6 +1,6 @@
 #include "../header/RigidCircleShape.h"
 
-RigidCircleShape::RigidCircleShape(sf::Vector2f pos, sf::Vector2f velocity, sf::Vector2f acceleration, double radius, double mass, type bodytype, double coefficientOfStaticFriction, double coefficientOfKineticFriction)
+RigidCircleShape::RigidCircleShape(pum::vector2d pos, pum::vector2d velocity, pum::vector2d acceleration, double radius, double mass, type bodytype, double coefficientOfStaticFriction, double coefficientOfKineticFriction)
 	:RigidBody(mass,velocity,acceleration, bodytype, coefficientOfStaticFriction, coefficientOfKineticFriction)
 {
 	this->radius = radius;
@@ -19,12 +19,12 @@ void RigidCircleShape::rotate(double angle)
 	this->angle = this->angle + angle;
 }
 
-void RigidCircleShape::translate(sf::Vector2f pos)
+void RigidCircleShape::translate(pum::vector2d pos)
 {
 	this->position = this->position + pos;
 }
 
-void RigidCircleShape::setpositon(sf::Vector2f pos)
+void RigidCircleShape::setpositon(pum::vector2d pos)
 {
 	this->position = pos;
 }

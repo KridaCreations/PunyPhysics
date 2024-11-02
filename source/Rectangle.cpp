@@ -3,7 +3,7 @@
 
 Rectangle::Rectangle(sf::Vector2f pos, double width, double length, double mass, bool control, RigidBody::type bodytype, sf::Color color)
 {
-	physicsbody = new RigidRectangleShape(pos,sf::Vector2f(0,0),sf::Vector2f(0,0),width,length,mass,bodytype);
+	physicsbody = new RigidRectangleShape(pum::vector2d(pos.x,pos.y),pum::vector2d(0,0), pum::vector2d(),width,length,mass,bodytype);
 	this->shape.setFillColor(color);
 	this->shape.setOrigin(sf::Vector2f(width / 2, length / 2));
 	this->shape.setSize(sf::Vector2f(width,length));
@@ -22,7 +22,8 @@ void Rectangle::draw(sf::RenderWindow& window)
 	this->boundbox.setPointCount(4);
 	for (int point = 0; point < this->physicsbody->points.size(); point++)
 	{
-		this->boundbox.setPoint(point, this->physicsbody->points[point]);
+		sf::Vector2f sfvect(this->physicsbody->points[point].x, this->physicsbody->points[point].y);
+		this->boundbox.setPoint(point,sfvect);
 	}
 	this->boundbox.setFillColor(sf::Color::Transparent);
 	this->boundbox.setOutlineColor(sf::Color::White);
@@ -39,7 +40,8 @@ void Rectangle::process(double delta)
 		
 	}
 	this->shape.setRotation(this->physicsbody->angle);
-	this->shape.setPosition(this->physicsbody->position);
+	sf::Vector2f sfvect(this->physicsbody->position.x, this->physicsbody->position.y);
+	this->shape.setPosition(sfvect);
 	if (this->physicsbody->iscolliding)
 	{
 		//this->shape.setOutlineColor(sf::Color::White);
@@ -53,15 +55,15 @@ void Rectangle::process(double delta)
 	if (this->control)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			physicsbody->velocity = sf::Vector2f(-100, 0);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))	
-			physicsbody->velocity = sf::Vector2f(100,0);
+			physicsbody->velocity = pum::vector2d(-100, 0);// sf::Vector2f(-100, 0);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			physicsbody->velocity = pum::vector2d(100, 0);// sf::Vector2f(100, 0);
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-			physicsbody->velocity = sf::Vector2f(0, -100);
+			physicsbody->velocity = pum::vector2d(0, -100);// sf::Vector2f(0, -100);
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-			physicsbody->velocity = sf::Vector2f(0, 100);
+			physicsbody->velocity = pum::vector2d(0, 100);// sf::Vector2f(0, 100);
 		else
-			physicsbody->velocity = sf::Vector2f(0, 0);
+			physicsbody->velocity = pum::vector2d();// sf::Vector2f(0, 0);
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			this->physicsbody->rotate(0.1);
@@ -69,10 +71,5 @@ void Rectangle::process(double delta)
 			this->physicsbody->rotate(-0.1);
 		
 
-		/*for (int point = 0; point < this->physicsbody->points.size(); point++)
-		{
-			std::cout << (this->physicsbody->points[point].x) << " " << (this->physicsbody->points[point].x) << std::endl;
-		}*/
-		//std::cout << std::endl;
 	}
 }

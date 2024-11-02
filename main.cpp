@@ -2,7 +2,6 @@
 #include "imgui-SFML.h"
 #include "SFML/Graphics.hpp"
 #include "./header/PhysicsWorld.h"
-#include "./header/PhysicsEngine.h"
 #include "./header/Circle.h"
 #include "./header/Rectangle.h"
 
@@ -11,7 +10,6 @@
 using namespace std;
 
 PhysicsWorld* PhysicsWorld::instancePtr = nullptr;
-PhysicsEngine* PhysicsEngine::instancePtr = nullptr;
 
 //sf::RenderWindow* win;
 
@@ -22,7 +20,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width,height), "Window Title", sf::Style::Titlebar | sf::Style::Close);
     //win = &window;
     PhysicsWorld::getInstance()->window = &window;
-    PhysicsWorld::getInstance()->gravity = sf::Vector2f(0, 1000);
+    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 1000);
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
@@ -51,7 +49,7 @@ int main()
         sf::Color::Yellow
     };
 
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 10; i++)
     {
         int x = rand() % 400 + 100;
         int y = rand() % 400 + 100;
@@ -67,6 +65,7 @@ int main()
         int x = 300;
         int y = 300;
         int col = rand() % colorlist.size();
+        std::cout << "adding a rect at " << x << " " << y << std::endl;
         Rectangle* temp = new Rectangle(sf::Vector2f(x, y),40,50, 100, false, RigidBody::Rigid, colorlist[col]);
         //temp->physicsbody->rotate(2);
         rectangles.push_back(temp);
@@ -75,8 +74,8 @@ int main()
    /* Circle* ball = new Circle(sf::Vector2f(300, 200), 90, 10, false, RigidBody::Rigid,sf::Color::Red);
     circles.push_back(ball);*/
 
-    Rectangle* rect = new Rectangle(sf::Vector2f(200, 100), 40, 50,10, false, RigidBody::Rigid, sf::Color::Red);
-    rectangles.push_back(rect);
+    /*Rectangle* rect = new Rectangle(sf::Vector2f(200, 100), 40, 50,10, false, RigidBody::Rigid, sf::Color::Red);
+    rectangles.push_back(rect);*/
 
     Rectangle* bar = new Rectangle(sf::Vector2f(300, 300), 400, 50, 1000, false, RigidBody::Static);
     //bar->physicsbody->angularvelocity = 40;
@@ -124,8 +123,8 @@ int main()
         double usec = deltatime.asMicroseconds();
         gameClock.restart(); //timer restart
         //std::cout << (usec / 1000000.000) << std::endl;
-        double deltatimeconst = (usec / 1000000.00);// 0.0005;
-        //double deltatimeconst = 0.0005;
+        //double deltatimeconst = (usec / 1000000.00);// 0.0005;
+        double deltatimeconst = 0.0005;
         //std::cout << deltatimeconst << std::endl;
         PhysicsWorld::getInstance()->process(deltatimeconst);
 
@@ -151,7 +150,7 @@ int main()
                 cout << "close button clicked " << endl;
                 window.close();
             }
-            if (event.type == sf::Event::KeyPressed)
+            /*if (event.type == sf::Event::KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::G)
                 {
@@ -168,7 +167,7 @@ int main()
                     }
                     std::cout <<"=============" << std::endl;
                 }
-            }
+            }*/
 
         }
         

@@ -1,6 +1,6 @@
 #include "../header/RigidBody.h"
 
-RigidBody::RigidBody(double mass, sf::Vector2f velocity, sf::Vector2f acceleration,type bodytype,double coefficientOfStaticFriction,double coefficientOfKineticFriction)
+RigidBody::RigidBody(double mass, pum::vector2d velocity, pum::vector2d acceleration,type bodytype,double coefficientOfStaticFriction,double coefficientOfKineticFriction)
 {
 	this->mass = mass;
 	this->coefficientOfStaticFriction = coefficientOfStaticFriction;
@@ -40,12 +40,12 @@ void RigidBody::rotate(double angle)
 	
 }
 
-void RigidBody::translate(sf::Vector2f pos)
+void RigidBody::translate(pum::vector2d pos)
 {
 	
 }
 
-void RigidBody::setpositon(sf::Vector2f pos)
+void RigidBody::setpositon(pum::vector2d pos)
 {
 	
 }

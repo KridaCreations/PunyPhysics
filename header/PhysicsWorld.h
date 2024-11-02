@@ -8,6 +8,8 @@
 #include "RigidBody.h"
 #include "imgui-SFML.h"
 #include "imgui.h"
+#include "pum.h"
+#include <math.h>
 
 class PhysicsWorld
 {
@@ -19,44 +21,29 @@ public:
 	struct collisionresult {
 		bool iscollided = false;
 		double depth = LLONG_MAX;
-		sf::Vector2f axis;
+		pum::vector2d axis;
 	} ;
-	struct pointlineprojectresult {
-		sf::Vector2f projectionpoint = sf::Vector2f(0,0);
-		double distance = 0;
-	};
+	
 	struct contactdetail {
-		sf::Vector2f contactpoint1 = sf::Vector2f(0,0);
-		sf::Vector2f contactpoint2 = sf::Vector2f(0,0);
+		pum::vector2d contactpoint1 = pum::vector2d(0,0);
+		pum::vector2d contactpoint2 = pum::vector2d(0,0);
 		int contactpointcount = 0;
 	};
 
-
-
-	sf::Vector2f setmag(sf::Vector2f vec, double mag);
-	double dotpro(sf::Vector2f vec1, sf::Vector2f vec2);
-	double crosspro(sf::Vector2f vec1, sf::Vector2f vec2);
-	sf::Vector2f mult(sf::Vector2f vec, double factor);
-	double getmag(sf::Vector2f vect);
-	
 
 	void resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, collisionresult collision, contactdetail contact);
 
 	void calculatemovement(double delta);
 	void collisionDetection();
 
-
 	void addbody(RigidBody* body);
 	void removeBody(RigidBody* body);
 	void process(double delta);
 
 	int framecount = 0;
-	//std::set<RigidBody*>bodies;
 	std::vector<RigidBody*>bodies;
-	sf::Vector2f gravity = sf::Vector2f(0.0, 0.0);
-	double coeffofrestitution = 1;
-	//sf::Event event ;
-
+	pum::vector2d gravity = pum::vector2d(0.0, 0.0);
+	double coeffofrestitution = 0.4;
 	sf::RenderWindow* window;
 
 
@@ -66,23 +53,17 @@ private:
 		
 	};
 public:
-	double getmagsquared(sf::Vector2f a);
-	std::pair<double, double> projectcircle(sf::Vector2f line, sf::Vector2f point,double radius);
-	std::pair<double, double> projectpolygon(sf::Vector2f line, std::vector<sf::Vector2f>& points);
-	void separateBodies(RigidBody* a, RigidBody* b, sf::Vector2f axis, double depth);
-	pointlineprojectresult distanceFromLinesegment(sf::Vector2f a, sf::Vector2f b, sf::Vector2f point);
+	void separateBodies(RigidBody* a, RigidBody* b, pum::vector2d axis, double depth);
 	
-	PhysicsWorld::collisionresult checkcollisionpolygoncircle(sf::Vector2f centerrect,std::vector<sf::Vector2f>& points, sf::Vector2f center, double radius);
-	PhysicsWorld::collisionresult checkcollisionpolygonpolygon(sf::Vector2f center1, std::vector<sf::Vector2f>& points1, sf::Vector2f center2, std::vector<sf::Vector2f>& points2);
-	PhysicsWorld::collisionresult checkcollisioncirclecircle(sf::Vector2f center1, double radius1, sf::Vector2f center2, double radius2);
+	PhysicsWorld::collisionresult checkcollisionpolygoncircle(pum::vector2d centerrect,std::vector<pum::vector2d>& points, pum::vector2d center, double radius);
+	PhysicsWorld::collisionresult checkcollisionpolygonpolygon(pum::vector2d center1, std::vector<pum::vector2d>& points1, pum::vector2d center2, std::vector<pum::vector2d>& points2);
+	PhysicsWorld::collisionresult checkcollisioncirclecircle(pum::vector2d center1, double radius1, pum::vector2d center2, double radius2);
 
-	PhysicsWorld::contactdetail findcontactdetailpolygonpolygon(std::vector<sf::Vector2f>points1, std::vector<sf::Vector2f>points2);
-	PhysicsWorld::contactdetail findcontactdetailpolygoncircle(std::vector<sf::Vector2f>points, sf::Vector2f center, double radius);
-	PhysicsWorld::contactdetail findcontactdetailcirclecircle(sf::Vector2f center1,double radius1,sf::Vector2f center2,double radius2);
-	
-	void resolvecollision(RigidBody* a, RigidBody* b, collisionresult, contactdetail);
+	PhysicsWorld::contactdetail findcontactdetailpolygonpolygon(std::vector<pum::vector2d>points1, std::vector<pum::vector2d>points2);
+	PhysicsWorld::contactdetail findcontactdetailpolygoncircle(std::vector<pum::vector2d>points, pum::vector2d center, double radius);
+	PhysicsWorld::contactdetail findcontactdetailcirclecircle(pum::vector2d center1,double radius1,pum::vector2d center2,double radius2);
 
-	bool nearlyequal(sf::Vector2f a, sf::Vector2f b);
+	bool nearlyequal(pum::vector2d a, pum::vector2d b);
 	bool nearlyequal(double a, double b);
 public:
 	static PhysicsWorld* getInstance() {

@@ -3,7 +3,7 @@
 
 Circle::Circle(sf::Vector2f pos, double radius, double mass, bool control,RigidBody::type bodytype, sf::Color color)
 {
-	this->physicsbody = new RigidCircleShape(pos, sf::Vector2f(0, 0), sf::Vector2f(0, 0), radius, mass, bodytype);
+	this->physicsbody = new RigidCircleShape(pum::vector2d(pos.x, pos.y), pum::vector2d(), pum::vector2d(), radius, mass, bodytype);
 	
 	//this->shape.setFillColor(color);
 	this->shape.setFillColor(sf::Color::Transparent);
@@ -28,7 +28,8 @@ void Circle::draw(sf::RenderWindow& window)
 void Circle::process(double delta)
 {
 	//retrieving the position and rotation from physics world
-	this->shape.setPosition(this->physicsbody->position);
+	sf::Vector2f sfvect(this->physicsbody->position.x, this->physicsbody->position.y);
+	this->shape.setPosition(sfvect);
 	this->shape.setRotation(this->physicsbody->angle);
 	if (this->physicsbody->iscolliding)
 	{
@@ -45,15 +46,15 @@ void Circle::process(double delta)
 	if (this->control)
 	{
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-			physicsbody->velocity = sf::Vector2f(-100, 0);
+			physicsbody->velocity = pum::vector2d(-100, 0);// sf::Vector2f(-100, 0);
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-			physicsbody->velocity = sf::Vector2f(100, 0);
+			physicsbody->velocity = pum::vector2d(100, 0);// sf::Vector2f(100, 0);
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-			physicsbody->velocity = sf::Vector2f(0, -100);
+			physicsbody->velocity = pum::vector2d(0, -100);// sf::Vector2f(0, -100);
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-			physicsbody->velocity = sf::Vector2f(0, 100);
+			physicsbody->velocity = pum::vector2d(0, 100);// sf::Vector2f(0, 100);
 		else
-			physicsbody->velocity = sf::Vector2f(0, 0);
+			physicsbody->velocity = pum::vector2d();// sf::Vector2f(0, 0);
 
 		
 	}
