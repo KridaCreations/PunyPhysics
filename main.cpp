@@ -20,10 +20,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width,height), "Window Title", sf::Style::Titlebar | sf::Style::Close);
     //win = &window;
     PhysicsWorld::getInstance()->window = &window;
-    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 1000);
+    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 100);
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
+
     //Circle* tempcircle1= new Circle(sf::Vector2f(300, 700), 25, 10, false, RigidBody::Static);
     //tempcircle1->physicsbody->velocity += sf::Vector2f(100, 100);
     //Circle* tempcircle2 = new Circle(sf::Vector2f(300, 400), 25, 10, false, RigidBody::Rigid);
@@ -49,7 +50,7 @@ int main()
         sf::Color::Yellow
     };
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 30; i++)
     {
         int x = rand() % 400 + 100;
         int y = rand() % 400 + 100;
@@ -58,7 +59,7 @@ int main()
         circles.push_back(temp);
     }
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 30; i++)
     {
         //int x = rand() % 500 + 100;
         //int y = rand() % 500 + 100;
@@ -66,7 +67,7 @@ int main()
         int y = 300;
         int col = rand() % colorlist.size();
         std::cout << "adding a rect at " << x << " " << y << std::endl;
-        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),40,50, 100, false, RigidBody::Rigid, colorlist[col]);
+        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),40,40, 100, false, RigidBody::Rigid, colorlist[col]);
         //temp->physicsbody->rotate(2);
         rectangles.push_back(temp);
     }
@@ -103,7 +104,11 @@ int main()
 
     sf::Clock gameClock;
     sf::Clock deltaClock;
-  
+    while (gameClock.getElapsedTime().asSeconds() < 13)
+    {
+        
+    }
+    gameClock.restart();
     while (window.isOpen())
     {
         window.clear(sf::Color::Black); //clearing the window
@@ -123,8 +128,8 @@ int main()
         double usec = deltatime.asMicroseconds();
         gameClock.restart(); //timer restart
         //std::cout << (usec / 1000000.000) << std::endl;
-        //double deltatimeconst = (usec / 1000000.00);// 0.0005;
-        double deltatimeconst = 0.0005;
+        double deltatimeconst = (usec / 1000000.00);// 0.0005;
+        //double deltatimeconst = 0.0005;
         //std::cout << deltatimeconst << std::endl;
         PhysicsWorld::getInstance()->process(deltatimeconst);
 
