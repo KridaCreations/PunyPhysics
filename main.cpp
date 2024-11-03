@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include<unordered_set>
+#include "header/Polygon.h"
 using namespace std;
 
 PhysicsWorld* PhysicsWorld::instancePtr = nullptr;
@@ -24,6 +25,7 @@ int main()
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
+    vector<Polygon*> polygons;
 
     //Circle* tempcircle1= new Circle(sf::Vector2f(300, 700), 25, 10, false, RigidBody::Static);
     //tempcircle1->physicsbody->velocity += sf::Vector2f(100, 100);
@@ -50,7 +52,7 @@ int main()
         sf::Color::Yellow
     };
 
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < 10; i++)
     {
         int x = rand() % 400 + 100;
         int y = rand() % 400 + 100;
@@ -59,17 +61,41 @@ int main()
         circles.push_back(temp);
     }
 
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < 10; i++)
     {
         //int x = rand() % 500 + 100;
         //int y = rand() % 500 + 100;
         int x = 300;
         int y = 300;
         int col = rand() % colorlist.size();
-        std::cout << "adding a rect at " << x << " " << y << std::endl;
+        //std::cout << "adding a rect at " << x << " " << y << std::endl;
         Rectangle* temp = new Rectangle(sf::Vector2f(x, y),40,40, 100, false, RigidBody::Rigid, colorlist[col]);
         //temp->physicsbody->rotate(2);
         rectangles.push_back(temp);
+    }
+    
+    for (int i = 0; i < 10; i++)
+    {
+        //int x = rand() % 500 + 100;
+        //int y = rand() % 500 + 100;
+        int x = 300;
+        int y = 100;
+        int col = rand() % colorlist.size();
+        int radiilen = 10;
+        pum::vector2d temppum(0, 1);
+        temppum.makelen(30);
+        sf::Vector2f temp(temppum.x, temppum.y);
+        std:vector<sf::Vector2f>p;
+        int sides = 6;
+        for (int j = 0; j < sides; j++)
+        {
+            p.push_back(temp + sf::Vector2f(x, y));
+            std::cout << temp.x << " " << temp.y << std::endl;
+            double rad = ((360/sides) * 3.14) / 180.0;// this->angle);
+            temp = sf::Vector2f(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
+        }
+        Polygon* tempbody = new Polygon(sf::Vector2f(x, y), p, 40, false,RigidBody::Rigid, colorlist[col]);
+        polygons.push_back(tempbody);
     }
 
    /* Circle* ball = new Circle(sf::Vector2f(300, 200), 90, 10, false, RigidBody::Rigid,sf::Color::Red);
@@ -104,11 +130,11 @@ int main()
 
     sf::Clock gameClock;
     sf::Clock deltaClock;
-    while (gameClock.getElapsedTime().asSeconds() < 13)
+    /*while (gameClock.getElapsedTime().asSeconds() < 13)
     {
         
     }
-    gameClock.restart();
+    gameClock.restart();*/
     while (window.isOpen())
     {
         window.clear(sf::Color::Black); //clearing the window
@@ -119,6 +145,10 @@ int main()
             it->draw(window);
         }
         for (auto& it : rectangles)
+        {
+            it->draw(window);
+        }
+        for (auto& it : polygons)
         {
             it->draw(window);
         }
@@ -138,6 +168,10 @@ int main()
             it->process(deltatimeconst);
         }
         for (auto& it : rectangles)
+        {
+            it->process(deltatimeconst);
+        }
+        for (auto& it : polygons)
         {
             it->process(deltatimeconst);
         }

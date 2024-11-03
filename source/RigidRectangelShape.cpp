@@ -41,7 +41,6 @@ void RigidRectangleShape::rotate(double angle)
 		this->points[point] = pum::vector2d(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
 		this->points[point] = this->points[point] + this->position;
 	}
-	//std::cout << std::endl;
 }
 
 void RigidRectangleShape::translate(pum::vector2d pos)

@@ -43,7 +43,7 @@ public:
 	int framecount = 0;
 	std::vector<RigidBody*>bodies;
 	pum::vector2d gravity = pum::vector2d(0.0, 0.0);
-	double coeffofrestitution = 0.4;
+	double coeffofrestitution = 0.3;
 	sf::RenderWindow* window;
 
 

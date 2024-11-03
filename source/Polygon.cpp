@@ -1,31 +1,40 @@
-#include "../header/Rectangle.h"
-#include <iostream>
-
-Rectangle::Rectangle(sf::Vector2f pos, double width, double length, double mass, bool control, RigidBody::type bodytype, sf::Color color)
+#include "../header/Polygon.h"
+#include "pum.h"
+Polygon::Polygon(sf::Vector2f pos, std::vector<sf::Vector2f> points, double mass, bool control, RigidBody::type bodytype, sf::Color color)
 {
-	physicsbody = new RigidRectangleShape(pum::vector2d(pos.x,pos.y),pum::vector2d(0,0), pum::vector2d(),width,length,mass,bodytype);
-	this->shape.setFillColor(color);
-	this->shape.setOrigin(sf::Vector2f(width / 2, length / 2));
-	this->shape.setSize(sf::Vector2f(width,length));
+	int pointcount = points.size();
+	//physicsbody = new RigidRectangleShape(pum::vector2d(pos.x, pos.y), pum::vector2d(0, 0), pum::vector2d(), width, length, mass, bodytype);
+	
+	std::vector<pum::vector2d>pumpoints;
+	for (int i = 0; i < pointcount; i++)
+	{
+		pumpoints.push_back(pum::vector2d(points[i].x, points[i].y));
+	}
+	physicsbody = new RigidPolygonShape(pum::vector2d(pos.x, pos.y), pum::vector2d(), pum::vector2d(),pumpoints,mass,bodytype);
+	
+	this->shape.setFillColor(sf::Color::Transparent);
+	this->shape.setOrigin(pos);
+	this->shape.setPointCount(pointcount);
+	for (int i = 0; i < pointcount; i++)
+	{
+		this->shape.setPoint(i, points[i]);
+	}
 	this->shape.setOutlineThickness(2);
 	this->control = control;
 	PhysicsWorld::getInstance()->addbody(this->physicsbody);
 }
 
-
-
-Rectangle::~Rectangle()
+Polygon::~Polygon()
 {
-
 }
 
-void Rectangle::draw(sf::RenderWindow& window)
+void Polygon::draw(sf::RenderWindow& window)
 {
-	this->boundbox.setPointCount(4);
+	this->boundbox.setPointCount(this->physicsbody->points.size());
 	for (int point = 0; point < this->physicsbody->points.size(); point++)
 	{
 		sf::Vector2f sfvect(this->physicsbody->points[point].x, this->physicsbody->points[point].y);
-		this->boundbox.setPoint(point,sfvect);
+		this->boundbox.setPoint(point, sfvect);
 	}
 	this->boundbox.setFillColor(sf::Color::Transparent);
 	this->boundbox.setOutlineColor(sf::Color::White);
@@ -34,12 +43,13 @@ void Rectangle::draw(sf::RenderWindow& window)
 	window.draw(this->boundbox);
 }
 
-void Rectangle::process(double delta)
+void Polygon::process(double delta)
 {
+
 	//retireving the position and rotation from physics world
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
 	{
-		
+
 	}
 	this->shape.setRotation(this->physicsbody->angle);
 	sf::Vector2f sfvect(this->physicsbody->position.x, this->physicsbody->position.y);
@@ -71,7 +81,7 @@ void Rectangle::process(double delta)
 			this->physicsbody->rotate(0.1);
 		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			this->physicsbody->rotate(-0.1);
-		
+
 
 	}
 }

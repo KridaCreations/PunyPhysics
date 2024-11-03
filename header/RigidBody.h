@@ -16,6 +16,7 @@ public:
 	{
 		Circle,
 		Rectangle,
+		Polygon
 	};
 		double mass;
 		double momentOfInertia;
@@ -28,7 +29,7 @@ public:
 		pum::vector2d position;
 
 		double kineticfriction = 0.6;
-		double staticfriction = 0.4;
+		double staticfriction = 100;
 		double angle = 0;
 		bool iscolliding = false;
 

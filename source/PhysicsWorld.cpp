@@ -1,6 +1,7 @@
 #include "../header/PhysicsWorld.h"
 
 #include <iostream>
+#include "../header/RigidPolygonShape.h"
 
 void PhysicsWorld::addbody(RigidBody* body)
 {
@@ -146,6 +147,156 @@ void PhysicsWorld::collisionDetection()
 					this->resolvecollisionwithfriciton((*itr1), (*itr2), result, det);
 				}
 			}
+			else if (((*itr1)->shapetype == RigidBody::Polygon) && ((*itr2)->shapetype == RigidBody::Circle))
+			{
+				RigidPolygonShape* rect = static_cast<RigidPolygonShape*>(*itr1);
+				RigidCircleShape* circ = static_cast<RigidCircleShape*>(*itr2);
+				collisionresult result = this->checkcollisionpolygoncircle(rect->position, rect->points, circ->position, circ->radius);
+				if (result.iscollided)
+				{
+					rect->iscolliding = true;
+					circ->iscolliding = true;
+					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
+					contactdetail det = this->findcontactdetailpolygoncircle(rect->points, circ->position, circ->radius);
+
+					//drawing collision point
+					sf::CircleShape temp;
+					temp.setFillColor(sf::Color::Red);
+					temp.setRadius(4);
+					temp.setOrigin(2, 2);
+					temp.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+
+					(*(this->window)).draw(temp);
+					this->resolvecollisionwithfriciton((*itr1), (*itr2), result, det);
+
+				}
+				}
+			else if (((*itr1)->shapetype == RigidBody::Circle) && ((*itr2)->shapetype == RigidBody::Polygon))
+			{
+				RigidPolygonShape* rect = static_cast<RigidPolygonShape*>(*itr2);
+				RigidCircleShape* circ = static_cast<RigidCircleShape*>(*itr1);
+				collisionresult result = this->checkcollisionpolygoncircle(rect->position, rect->points, circ->position, circ->radius);
+				if (result.iscollided)
+				{
+
+					rect->iscolliding = true;
+					circ->iscolliding = true;
+					this->separateBodies((*itr2), (*itr1), result.axis, result.depth);
+
+					contactdetail det = this->findcontactdetailpolygoncircle(rect->points, circ->position, circ->radius);
+
+					//drawing collision point
+					sf::CircleShape temp;
+					temp.setFillColor(sf::Color::Red);
+					temp.setRadius(4);
+					temp.setOrigin(2, 2);
+					temp.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+					(*(this->window)).draw(temp);
+					this->resolvecollisionwithfriciton((*itr2), (*itr1), result, det);
+				}
+				}
+			else if (((*itr1)->shapetype == RigidBody::Polygon) && ((*itr2)->shapetype == RigidBody::Polygon))
+			{
+				RigidPolygonShape* first = static_cast<RigidPolygonShape*>(*itr1);
+				RigidPolygonShape* second = static_cast<RigidPolygonShape*>(*itr2);
+				collisionresult result = this->checkcollisionpolygonpolygon(first->position, first->points, second->position, second->points);
+				if (result.iscollided)
+				{
+					first->iscolliding = true;
+					second->iscolliding = true;
+					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
+
+					contactdetail det = this->findcontactdetailpolygonpolygon(first->points, second->points);
+
+
+					//drawing collision point
+					sf::CircleShape temp1;
+					temp1.setFillColor(sf::Color::Red);
+					temp1.setRadius(4);
+					temp1.setOrigin(2, 2);
+					temp1.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+					(*(this->window)).draw(temp1);
+					if (det.contactpointcount == 2)
+					{
+						sf::CircleShape temp2;
+						temp2.setFillColor(sf::Color::Red);
+						temp2.setRadius(4);
+						temp2.setOrigin(2, 2);
+						temp2.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+						(*(this->window)).draw(temp2);
+					}
+					this->resolvecollisionwithfriciton((*itr1), (*itr2), result, det);
+
+				}
+			}
+			else if (((*itr1)->shapetype == RigidBody::Rectangle) && ((*itr2)->shapetype == RigidBody::Polygon))
+			{
+				RigidRectangleShape* first = static_cast<RigidRectangleShape*>(*itr1);
+				RigidPolygonShape* second = static_cast<RigidPolygonShape*>(*itr2);
+				collisionresult result = this->checkcollisionpolygonpolygon(first->position, first->points, second->position, second->points);
+				if (result.iscollided)
+				{
+					first->iscolliding = true;
+					second->iscolliding = true;
+					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
+
+					contactdetail det = this->findcontactdetailpolygonpolygon(first->points, second->points);
+
+
+					//drawing collision point
+					sf::CircleShape temp1;
+					temp1.setFillColor(sf::Color::Red);
+					temp1.setRadius(4);
+					temp1.setOrigin(2, 2);
+					temp1.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+					(*(this->window)).draw(temp1);
+					if (det.contactpointcount == 2)
+					{
+						sf::CircleShape temp2;
+						temp2.setFillColor(sf::Color::Red);
+						temp2.setRadius(4);
+						temp2.setOrigin(2, 2);
+						temp2.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+						(*(this->window)).draw(temp2);
+					}
+					this->resolvecollisionwithfriciton((*itr1), (*itr2), result, det);
+
+				}
+			}
+			else if (((*itr1)->shapetype == RigidBody::Polygon) && ((*itr2)->shapetype == RigidBody::Rectangle))
+			{
+				RigidPolygonShape* first = static_cast<RigidPolygonShape*>(*itr1);
+				RigidRectangleShape* second = static_cast<RigidRectangleShape*>(*itr2);
+				collisionresult result = this->checkcollisionpolygonpolygon(first->position, first->points, second->position, second->points);
+				if (result.iscollided)
+				{
+					first->iscolliding = true;
+					second->iscolliding = true;
+					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
+
+					contactdetail det = this->findcontactdetailpolygonpolygon(first->points, second->points);
+
+
+					//drawing collision point
+					sf::CircleShape temp1;
+					temp1.setFillColor(sf::Color::Red);
+					temp1.setRadius(4);
+					temp1.setOrigin(2, 2);
+					temp1.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+					(*(this->window)).draw(temp1);
+					if (det.contactpointcount == 2)
+					{
+						sf::CircleShape temp2;
+						temp2.setFillColor(sf::Color::Red);
+						temp2.setRadius(4);
+						temp2.setOrigin(2, 2);
+						temp2.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
+						(*(this->window)).draw(temp2);
+					}
+					this->resolvecollisionwithfriciton((*itr1), (*itr2), result, det);
+
+				}
+			}
 		}
 	}
 }
@@ -184,6 +335,9 @@ void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, coll
 		pum::vector2d relativevelocity = (b->velocity + angularlinearvelocityb) - (a->velocity + angularlinearvelocitya);
 
 		float contactvelocitymag = pum::dotpro(relativevelocity, normal);
+		/*std::cout << normal.x << " " << normal.y << std::endl;
+		std::cout << contactvelocitymag << std::endl;
+		std::cout << std::endl;*/
 		if (contactvelocitymag < 0.0)
 		{
 			continue;
@@ -217,13 +371,17 @@ void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, coll
 		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
 
 		a->velocity = a->velocity - (impulse * a->getInvMass());
+		pum::vector2d achange = (impulse * a->getInvMass() * -1);
+		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
 		a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, impulse)) * a->getInvInertia();
 
 		b->velocity = b->velocity + (impulse * b->getInvMass());
+		pum::vector2d bchange = (impulse * b->getInvMass() * 1);
+		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
 		b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, impulse)) * b->getInvInertia();
 	}
 
-
+	//return;
 	for (int i = 0; i < contactcount; i++)
 	{
 		pum::vector2d ra = contaclist[i] - a->position;
@@ -240,13 +398,15 @@ void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, coll
 
 		float contactvelocitymag = pum::dotpro(relativevelocity, normal);
 		pum::vector2d tangent = relativevelocity - (normal * contactvelocitymag);
-
+		//std::cout << "tangetwith mag " << tangent.x << " " << tangent.y << std::endl;
 		if (this->nearlyequal(tangent, pum::vector2d(0, 0)))
 		{
+			//std::cout << "tangent equal to zero" << std::endl;
 			continue;
 		}
 		else
 		{
+			//std::cout << "tangent not equal to zero" << std::endl;
 			tangent.normalize();
 		}
 
@@ -289,13 +449,17 @@ void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, coll
 		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
 
 		a->velocity = a->velocity - (frictionimpulse * a->getInvMass());
+		pum::vector2d achange = (frictionimpulse * a->getInvMass() * -1);
+		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
 		a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, frictionimpulse)) * a->getInvInertia();
 
 		b->velocity = b->velocity + (frictionimpulse * b->getInvMass());
+		pum::vector2d bchange = (frictionimpulse * b->getInvMass() * -1);
+		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
 		b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, frictionimpulse)) * b->getInvInertia();
 
 	}
-
+	//std::cout << "==========" << std::endl;
 
 }
 
@@ -326,6 +490,11 @@ void PhysicsWorld::calculatemovement(double delta)
 			it->rotate(it->angularvelocity * delta);
 		}
 		else if (it->shapetype == RigidBody::shapetypes::Rectangle)
+		{
+			it->translate(it->velocity * delta);
+			it->rotate(it->angularvelocity * delta);
+		}
+		else if (it->shapetype == RigidBody::shapetypes::Polygon)
 		{
 			it->translate(it->velocity * delta);
 			it->rotate(it->angularvelocity * delta);
@@ -586,7 +755,7 @@ bool PhysicsWorld::nearlyequal(pum::vector2d a, pum::vector2d b)
 {
 	pum::vector2d axis = a - b;
 	double mag = axis.length();
-	if (mag == 0)
+	if (mag <= 0.005)
 		if (mag < 0.00005)
 			return true;
 

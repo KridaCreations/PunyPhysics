@@ -148,17 +148,21 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="source\Circle.cpp" />
     <ClCompile Include="source\PhysicsWorld.cpp" />
+    <ClCompile Include="source\Polygon.cpp" />
     <ClCompile Include="source\Rectangle.cpp" />
     <ClCompile Include="source\RigidBody.cpp" />
     <ClCompile Include="source\RigidCircleShape.cpp" />
+    <ClCompile Include="source\RigidPolygonShape.cpp" />
     <ClCompile Include="source\RigidRectangelShape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Circle.h" />
     <ClInclude Include="header\PhysicsWorld.h" />
+    <ClInclude Include="header\Polygon.h" />
     <ClInclude Include="header\Rectangle.h" />
     <ClInclude Include="header\RigidBody.h" />
     <ClInclude Include="header\RigidCircleShape.h" />
+    <ClInclude Include="header\RigidPolygonShape.h" />
     <ClInclude Include="header\RigidRectangelShape.h" />
     <ClInclude Include="imgui\imconfig-SFML.h" />
     <ClInclude Include="imgui\imconfig.h" />
