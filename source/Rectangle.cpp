@@ -3,7 +3,9 @@
 
 Rectangle::Rectangle(sf::Vector2f pos, double width, double length, double mass, bool control, RigidBody::type bodytype, sf::Color color)
 {
+
 	physicsbody = new RigidRectangleShape(pum::vector2d(pos.x,pos.y),pum::vector2d(0,0), pum::vector2d(),width,length,mass,bodytype);
+	//this->physicsbody
 	this->shape.setFillColor(color);
 	this->shape.setOrigin(sf::Vector2f(width / 2, length / 2));
 	this->shape.setSize(sf::Vector2f(width,length));

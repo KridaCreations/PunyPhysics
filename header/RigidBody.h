@@ -42,16 +42,18 @@ public:
 
 		RigidBody(double mass,pum::vector2d velocity,pum::vector2d acceleration,type bodytype, double coefficientOfStaticFriction = 0, double coefficientOfKineticFriction = 0);
 		
+
+
 		double getInvMass();
 		double getInvInertia();
+		double deg2rad(double deg);
+		double rad2deg(double rad);
+		pum::vector2d getglobalpos(pum::vector2d local_pos);
+
 		virtual void setrotation(double angle);
 		virtual void setpositon(pum::vector2d pos);
 		virtual void translate(pum::vector2d pos);
 		virtual void rotate(double angle);
-
-		double deg2rad(double deg);
-		double rad2deg(double rad);
-
 		
 		RigidBody() = delete;
 };

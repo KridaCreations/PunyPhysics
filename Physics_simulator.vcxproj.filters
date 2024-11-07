@@ -56,6 +56,9 @@
     <ClCompile Include="source\Polygon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\joint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -107,6 +110,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header\Polygon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="header\joint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,20 +27,6 @@ int main()
     vector<Rectangle*> rectangles;
     vector<Polygon*> polygons;
 
-    //Circle* tempcircle1= new Circle(sf::Vector2f(300, 700), 25, 10, false, RigidBody::Static);
-    //tempcircle1->physicsbody->velocity += sf::Vector2f(100, 100);
-    //Circle* tempcircle2 = new Circle(sf::Vector2f(300, 400), 25, 10, false, RigidBody::Rigid);
-    //circles.push_back(tempcircle1);
-    //circles.push_back(tempcircle2);
-
-    //Rectangle* temprectangle = new Rectangle(sf::Vector2f(200, 200), 200, 50, 10, false, RigidBody::Rigid);
-    //rectangles.push_back(temprectangle);
-    //temprectangle->physicsbody->rotate(10);
-
-    /*Rectangle* temprectangle6 = new Rectangle(sf::Vector2f(200, 400), 50, 50, 10, false, RigidBody::Static);
-    rectangles.push_back(temprectangle6);
-    temprectangle6->physicsbody->rotate(45);*/
-
 
     std::vector<sf::Color>colorlist = {
         sf::Color::Blue,
@@ -52,7 +38,7 @@ int main()
         sf::Color::Yellow
     };
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 0; i++)
     {
         int x = rand() % 400 + 100;
         int y = rand() % 400 + 100;
@@ -61,7 +47,7 @@ int main()
         circles.push_back(temp);
     }
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 0; i++)
     {
         //int x = rand() % 500 + 100;
         //int y = rand() % 500 + 100;
@@ -74,7 +60,7 @@ int main()
         rectangles.push_back(temp);
     }
     
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 0; i++)
     {
         //int x = rand() % 500 + 100;
         //int y = rand() % 500 + 100;
@@ -104,18 +90,30 @@ int main()
     /*Rectangle* rect = new Rectangle(sf::Vector2f(200, 100), 40, 50,10, false, RigidBody::Rigid, sf::Color::Red);
     rectangles.push_back(rect);*/
 
-    Rectangle* bar = new Rectangle(sf::Vector2f(300, 300), 400, 50, 1000, false, RigidBody::Static);
+    Rectangle* bar = new Rectangle(sf::Vector2f(450, 450), 300, 50, 1000, false, RigidBody::Static);
     //bar->physicsbody->angularvelocity = 40;
     //bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
-    bar->physicsbody->rotate(20);
+    //bar->physicsbody->rotate(20);
     rectangles.push_back(bar);
 
 
-    Rectangle* bar2 = new Rectangle(sf::Vector2f(600, 600), 400, 50, 1000, false, RigidBody::Static);
+    joint* j = new joint(10, false);
+    PhysicsWorld::getInstance()->joints.push_back(j);
+
+    Rectangle* bar3 = new Rectangle(sf::Vector2f(600,490), 20, 80, 1000, false);
+    //bar3->physicsbody->angularvelocity = 40;
+    bar3->physicsbody->velocity = pum::vector2d(100,0);
+    //bar3->physicsbody->rotate(-45);
+    rectangles.push_back(bar3);
+
+    j->addbodies(bar->physicsbody, pum::vector2d(150, 0));
+    j->addbodies(bar3->physicsbody, pum::vector2d(0,-40));
+
+    //Rectangle* bar2 = new Rectangle(sf::Vector2f(600, 600), 400, 50, 1000, false, RigidBody::Static);
     //bar2->physicsbody->angularvelocity = 40;
-    //bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
-    bar2->physicsbody->rotate(-20);
-    rectangles.push_back(bar2);
+    ////bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
+    //bar2->physicsbody->rotate(-20);
+    //rectangles.push_back(bar2);
 
 
     //forming boundaries////////////////////
@@ -189,35 +187,11 @@ int main()
                 cout << "close button clicked " << endl;
                 window.close();
             }
-            /*if (event.type == sf::Event::KeyPressed)
-            {
-                if (event.key.code == sf::Keyboard::G)
-                {
-                    for (auto& it : rectangles)
-                    {
-                        for (int point = 0; point < it->physicsbody->points.size(); point++)
-                        {
-                            sf::Vector2f a = it->physicsbody->points[point];
-                            sf::Vector2f b = it->physicsbody->points[(point + 1) % it->physicsbody->points.size()];
-                            std::cout << (PhysicsWorld::getInstance()->getmag(a - b)) << " ";
-                        }
-                        
-                        std::cout <<std::endl;
-                    }
-                    std::cout <<"=============" << std::endl;
-                }
-            }*/
 
         }
         
         
         ImGui::SFML::Update(window, deltaClock.restart());
-        //ImGui::Begin("Window title");
-        
-        //ImGui::End();
-        //draw function
-        
-       
         
 
         ImGui::SFML::Render(window);

@@ -147,6 +147,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="source\Circle.cpp" />
+    <ClCompile Include="source\joint.cpp" />
     <ClCompile Include="source\PhysicsWorld.cpp" />
     <ClCompile Include="source\Polygon.cpp" />
     <ClCompile Include="source\Rectangle.cpp" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Circle.h" />
+    <ClInclude Include="header\joint.h" />
     <ClInclude Include="header\PhysicsWorld.h" />
     <ClInclude Include="header\Polygon.h" />
     <ClInclude Include="header\Rectangle.h" />

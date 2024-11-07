@@ -9,6 +9,7 @@
 #include "imgui-SFML.h"
 #include "imgui.h"
 #include "pum.h"
+#include "joint.h"
 #include <math.h>
 
 class PhysicsWorld
@@ -35,6 +36,9 @@ public:
 
 	void calculatemovement(double delta);
 	void collisionDetection();
+	void constraintsolving();
+	void solvejoints(joint* nail);
+
 
 	void addbody(RigidBody* body);
 	void removeBody(RigidBody* body);
@@ -42,6 +46,7 @@ public:
 
 	int framecount = 0;
 	std::vector<RigidBody*>bodies;
+	std::vector<joint*>joints;
 	pum::vector2d gravity = pum::vector2d(0.0, 0.0);
 	double coeffofrestitution = 0.3;
 	sf::RenderWindow* window;
