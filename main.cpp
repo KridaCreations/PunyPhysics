@@ -109,6 +109,36 @@ int main()
     j->addbodies(bar->physicsbody, pum::vector2d(150, 0));
     j->addbodies(bar3->physicsbody, pum::vector2d(0,-40));
 
+
+
+    joint* j2 = new joint(10, false);
+    PhysicsWorld::getInstance()->joints.push_back(j2);
+
+    Rectangle* bar4 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 1000, false);
+    //bar3->physicsbody->angularvelocity = 40;
+    //bar3->physicsbody->velocity = pum::vector2d(100,0);
+    //bar3->physicsbody->rotate(-45);
+    rectangles.push_back(bar4);
+
+    j2->addbodies(bar3->physicsbody, pum::vector2d(0,40));
+    j2->addbodies(bar4->physicsbody, pum::vector2d(0, -40));
+
+
+    joint* j3 = new joint(10, false);
+    PhysicsWorld::getInstance()->joints.push_back(j3);
+
+    Rectangle* bar5 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 1000, false);
+    //bar3->physicsbody->angularvelocity = 40;
+    //bar3->physicsbody->velocity = pum::vector2d(100,0);
+    //bar3->physicsbody->rotate(-45);
+    rectangles.push_back(bar5);
+
+    j3->addbodies(bar4->physicsbody, pum::vector2d(0, 40));
+    j3->addbodies(bar5->physicsbody, pum::vector2d(0, -40));
+
+
+
+
     //Rectangle* bar2 = new Rectangle(sf::Vector2f(600, 600), 400, 50, 1000, false, RigidBody::Static);
     //bar2->physicsbody->angularvelocity = 40;
     ////bar->physicsbody->velocity = sf::Vector2f(0, -10.0);

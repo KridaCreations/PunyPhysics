@@ -38,6 +38,9 @@ public:
 	void collisionDetection();
 	void constraintsolving();
 	void solvejoints(joint* nail);
+	void solvejoints2(joint* nail);
+
+	void solvejointswithfriction(joint* nail);
 
 
 	void addbody(RigidBody* body);
