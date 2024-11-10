@@ -24,14 +24,14 @@ double RigidBody::getInvInertia()
 		return (1 / this->momentOfInertia);
 }
 
-double RigidBody::deg2rad(double deg)
+long double RigidBody::deg2rad(double deg)
 {
-	return (deg * 3.14)/180.0;
+	return (deg /180.00) * 3.14159265358979323846;
 }
 
-double RigidBody::rad2deg(double rad)
+long double RigidBody::rad2deg(double rad)
 {
-	return (rad * 180) / 3.14;
+	return (rad / 3.14159265358979323846) * 180.00;
 }
 
 pum::vector2d RigidBody::getglobalpos(pum::vector2d local_pos)

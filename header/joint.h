@@ -8,6 +8,7 @@ public:
 
 	pum::vector2d pinposition;
 
+	double staticfricitonconst = 10;
 	double radius;
 
 	joint(double radius, bool pinned, pum::vector2d pinposition = pum::vector2d(0,0));

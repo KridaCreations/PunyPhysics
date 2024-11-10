@@ -46,8 +46,8 @@ public:
 
 		double getInvMass();
 		double getInvInertia();
-		double deg2rad(double deg);
-		double rad2deg(double rad);
+		long double deg2rad(double deg);
+		long double rad2deg(double rad);
 		pum::vector2d getglobalpos(pum::vector2d local_pos);
 
 		virtual void setrotation(double angle);
