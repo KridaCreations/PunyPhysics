@@ -44,6 +44,14 @@ pum::vector2d RigidBody::getglobalpos(pum::vector2d local_pos)
 	local_pos = pum::vector2d(((local_pos.x * cos(rad)) - (local_pos.y * sin(rad))), ((local_pos.x * sin(rad)) + (local_pos.y * cos(rad))));
 	//std::cout << __FUNCTION__ << " " << local_pos.x << " " << local_pos.y << std::endl;
 	local_pos = local_pos + this->position;
+	if (abs(local_pos.x) < 0.00005)
+	{	
+		local_pos.x = 0;
+	}
+	if (abs(local_pos.y) < 0.00005)
+	{
+		local_pos.y = 0;
+	}
 	return local_pos;
 }
 

@@ -311,6 +311,7 @@ void PhysicsWorld::constraintsolving()
 	{
 		solvejointswithfriction(it);
 	}
+	//cout << "======" << endl;
 }
 
 void PhysicsWorld::solvejoints(joint* nail)
@@ -566,12 +567,27 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 	{
 		jointpos = jointpos / masssum;
 	}
-
+	//cout << "joint pos " << jointpos.x<<" "<<jointpos.y << endl;
 	//correcting the position
 	for (auto itr = begin(nail->bodies); itr != end(nail->bodies); itr++)
 	{
+		//cout << "global pos " << ((itr->second)->getglobalpos(itr->first)).x << " " << ((itr->second)->getglobalpos(itr->first)).y << endl;
 		pum::vector2d posdiff = jointpos - (itr->second)->getglobalpos(itr->first);
-		(itr->second)->position = (itr->second)->position + posdiff;
+		//to remove float point error
+		//cout << "joint xfact " << jointpos.x << " globalxfact " << ((itr->second)->getglobalpos(itr->first)).x << endl;
+		posdiff.x = jointpos.x - ((itr->second)->getglobalpos(itr->first)).x;
+		//cout << "joint yfact " << jointpos.y << " globalyfact " << ((itr->second)->getglobalpos(itr->first)).y << endl;
+		posdiff.y = jointpos.y - ((itr->second)->getglobalpos(itr->first)).y;
+
+		/*if (this->nearlyequal(jointpos, pum::vector2d(0, 0)))
+		{
+			jointpos = pum::vector2d(0, 0);
+		}*/
+		//posdiff = this->simplify(posdiff);
+		//pos
+		//cout << "posdiff " << posdiff.x << " " << posdiff.y << endl;
+		//(itr->second)->position = (itr->second)->position + posdiff;
+		(itr->second)->setpositon((itr->second)->position + posdiff);
 	}
 	//drawing the joint point for debug
 	sf::CircleShape temp;
@@ -591,7 +607,7 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 		pum::vector2d ra = jointpos - (basebodydet.second->position);
 		pum::vector2d rb = jointpos - (currbodydet.second->position);
 		//std::cout << "rb " << rb.x << " " << rb.y << endl;
-		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.y);
+		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
 		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
 
 		//(currbodydet.second)->velocity = pum::vector2d(73.8838 , -15.6203);
@@ -635,12 +651,13 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 		j = j / denom;
 		//std::cout << "j " << j << std::endl;
 		pum::vector2d impulse = normal * j;
-		//std::cout << "impulse " << impulse.x<<" "<<impulse.y << std::endl;
+		//std::cout << "impulse " <p< impulse.x<<" "<<impulse.y << std::endl;
 		//std::cout << "prev vel basebody  " << ((basebodydet.second)->velocity).x<<" "<< ((basebodydet.second)->velocity).y << std::endl;
 		(basebodydet.second)->velocity = (basebodydet.second)->velocity - (impulse * (basebodydet.second)->getInvMass());
 		//std::cout << "next vel basebody " << ((basebodydet.second)->velocity).x<<" "<< ((basebodydet.second)->velocity).y << std::endl;
 		pum::vector2d achange = (impulse * (basebodydet.second)->getInvMass() * -1);
 		//std::cout << "prev angular vel basebody " << ((basebodydet.second)->angularvelocity) << std::endl;
+		//std::cout << "raperp " << raperp.x << " " << raperp.y << std::endl;
 		(basebodydet.second)->angularvelocity -= (basebodydet.second)->rad2deg(pum::dotpro(raperp, impulse)) * (basebodydet.second)->getInvInertia();
 		//std::cout << "next angular vel basebody " << (((basebodydet.second)->angularvelocity)) << std::endl;
 
@@ -650,6 +667,7 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 		//std::cout << "next vel " << ((currbodydet.second)->velocity).x<<" "<< ((currbodydet.second)->velocity).y << std::endl;
 		pum::vector2d bchange = (impulse * (currbodydet.second)->getInvMass() * -1);
 		//std::cout << "prev angular vel " << ((currbodydet.second)->angularvelocity) << std::endl;
+		//std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
 		(currbodydet.second)->angularvelocity += (currbodydet.second)->rad2deg(pum::dotpro(rbperp, impulse)) * (currbodydet.second)->getInvInertia();
 		//std::cout << "next angular vel " << (((currbodydet.second)->angularvelocity)) << std::endl;
 
@@ -754,6 +772,7 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 
 
 	}
+	//cout << endl;
 	//std::cout << " ============= " << std::endl;
 
 
@@ -926,7 +945,9 @@ void PhysicsWorld::calculatemovement(double delta)
 
 		if (it->bodyType == RigidBody::Static)
 		{
+			//cout << "prev vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			it->velocity = it->velocity + (it->acceleration * delta);
+			//cout << "next vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			if (this->nearlyequal(it->velocity, pum::vector2d(0, 0)))
 			{
 				it->velocity = pum::vector2d(0, 0);
@@ -934,7 +955,9 @@ void PhysicsWorld::calculatemovement(double delta)
 		}
 		else
 		{
+			//cout << "prev vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			it->velocity = it->velocity + ((it->acceleration + this->gravity) * delta);
+			//cout << "next vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			if (this->nearlyequal(it->velocity, pum::vector2d(0, 0)))
 			{
 				it->velocity = pum::vector2d(0, 0);
@@ -1206,14 +1229,25 @@ PhysicsWorld::contactdetail PhysicsWorld::findcontactdetailcirclecircle(pum::vec
 
 }
 
+pum::vector2d PhysicsWorld::simplify(pum::vector2d& a)
+{
+	if (abs(a.x) < 0.005)
+		a.x = 0;
+	if (abs(a.y) < 0.005)
+		a.y = 0;
+	return a;
+}
+
 
 bool PhysicsWorld::nearlyequal(pum::vector2d a, pum::vector2d b)
 {
 	pum::vector2d axis = a - b;
 	double mag = axis.length();
+	//cout << "mag " << mag << endl;
+	/*if ((abs(a.x - b.x) < 0.005) && (abs(a.y - b.y) < 0.005))
+		return true;*/
 	if (mag <= 0.005)
-		if (mag < 0.00005)
-			return true;
+		return true;
 
 	return false;
 }

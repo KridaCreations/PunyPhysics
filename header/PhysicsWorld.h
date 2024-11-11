@@ -70,7 +70,7 @@ public:
 	PhysicsWorld::contactdetail findcontactdetailpolygonpolygon(std::vector<pum::vector2d>points1, std::vector<pum::vector2d>points2);
 	PhysicsWorld::contactdetail findcontactdetailpolygoncircle(std::vector<pum::vector2d>points, pum::vector2d center, double radius);
 	PhysicsWorld::contactdetail findcontactdetailcirclecircle(pum::vector2d center1,double radius1,pum::vector2d center2,double radius2);
-
+	pum::vector2d simplify(pum::vector2d &a);
 	bool nearlyequal(pum::vector2d a, pum::vector2d b);
 	bool nearlyequal(double a, double b);
 public:

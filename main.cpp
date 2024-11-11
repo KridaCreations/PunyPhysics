@@ -21,7 +21,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width,height), "Window Title", sf::Style::Titlebar | sf::Style::Close);
     //win = &window;
     PhysicsWorld::getInstance()->window = &window;
-    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 10000);
+    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 10);
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
@@ -76,7 +76,7 @@ int main()
         for (int j = 0; j < sides; j++)
         {
             p.push_back(temp + sf::Vector2f(x, y));
-            std::cout << temp.x << " " << temp.y << std::endl;
+            //std::cout << temp.x << " " << temp.y << std::endl;
             double rad = ((360/sides) * 3.14) / 180.0;// this->angle);
             temp = sf::Vector2f(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
         }
@@ -93,7 +93,7 @@ int main()
 
 
     joint* j = new joint(10, false);
-    j->staticfricitonconst = 0.05;
+    j->staticfricitonconst = 0.00;
     PhysicsWorld::getInstance()->joints.push_back(j);
 
     Rectangle* bar2 = new Rectangle(sf::Vector2f(600,490), 20, 80, 100, false);
@@ -105,8 +105,8 @@ int main()
 
 
 
-    joint* j2 = new joint(100, false);
-    j2->staticfricitonconst = 0.05;
+    joint* j2 = new joint(100000, false);
+    j2->staticfricitonconst = 99999999999.05;
     PhysicsWorld::getInstance()->joints.push_back(j2);
 
     Rectangle* bar3 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
@@ -116,8 +116,8 @@ int main()
     j2->addbodies(bar3->physicsbody, pum::vector2d(0, -40));
 
 
-    joint* j3 = new joint(100, false);
-    j3->staticfricitonconst = 0.05;
+    joint* j3 = new joint(100000, false);
+    j3->staticfricitonconst = 99999999999.05;
     PhysicsWorld::getInstance()->joints.push_back(j3);
 
     Rectangle* bar4 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
@@ -169,8 +169,8 @@ int main()
         double usec = deltatime.asMicroseconds();
         gameClock.restart(); //timer restart
         //std::cout << (usec / 1000000.000) << std::endl;
-        double deltatimeconst = (usec / 1000000.00);// 0.0005;
-        //double deltatimeconst = 0.0005;
+        //double deltatimeconst = (usec / 1000000.00);// 0.0005;
+        double deltatimeconst = 0.00005;
         //std::cout << deltatimeconst << std::endl;
         PhysicsWorld::getInstance()->process(deltatimeconst);
 
