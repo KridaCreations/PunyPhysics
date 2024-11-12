@@ -24,7 +24,7 @@ void PhysicsWorld::process(double delta)
 	for (int i = 0; i < maxiterations; i++)
 	{
 		calculatemovement(delta);
-		//collisionDetection();
+		collisionDetection();
 		constraintsolving();
 	}
 }
@@ -100,13 +100,14 @@ void PhysicsWorld::collisionDetection()
 				collisionresult result = this->checkcollisionpolygonpolygon(first->position, first->points, second->position, second->points);
 				if (result.iscollided)
 				{
+					//cout << "axis " << result.axis.x << " " << result.axis.y << endl;
 					first->iscolliding = true;
 					second->iscolliding = true;
 					this->separateBodies((*itr1), (*itr2), result.axis, result.depth);
 
 					contactdetail det = this->findcontactdetailpolygonpolygon(first->points, second->points);
 
-
+					//cout << "contact count " << det.contactpointcount << endl;
 					//drawing collision point
 					sf::CircleShape temp1;
 					temp1.setFillColor(sf::Color::Red);
@@ -309,235 +310,11 @@ void PhysicsWorld::constraintsolving()
 {
 	for (auto& it : joints)
 	{
-		solvejointswithfriction(it);
+		solvejointswithfriction2(it);
 	}
 	//cout << "======" << endl;
 }
 
-void PhysicsWorld::solvejoints(joint* nail)
-{
-	long double masssum = 0;
-	pum::vector2d jointpos;
-	bool issomebodystatic = false;
-	for (auto& it : nail->bodies)
-	{
-		if (it.second->bodyType == RigidBody::Static)
-		{
-			issomebodystatic = true;
-			jointpos = (it.second)->getglobalpos(it.first);
-			break;
-		}
-		pum::vector2d currpos = (it.second)->getglobalpos(it.first);
-		jointpos = jointpos + (currpos * ((it.second)->mass));
-		masssum += ((it.second)->mass);
-	}
-	if (issomebodystatic == false)
-	{
-		jointpos = jointpos / masssum;
-	}
-	//drawing the joint point
-	sf::CircleShape temp;
-	temp.setFillColor(sf::Color::Yellow);
-	temp.setRadius(4);
-	temp.setOrigin(2, 2);
-	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
-
-	(*(this->window)).draw(temp);
-	
-	for (auto itr = begin(nail->bodies); itr != end(nail->bodies); itr++)
-	{
-		pum::vector2d posdiff = jointpos - (itr->second)->getglobalpos(itr->first);
-		pum::vector2d normal = posdiff * (-1);
-		normal.normalize();
-
-		//correcintg the position
-		(itr->second)->position = (itr->second)->position + posdiff;
-		//continue;
-		if (itr->second->bodyType == RigidBody::Static)
-		{
-			continue;
-		}
-		
-		//std::cout <<"local point r " << (itr->first).x << " " << (itr->first).y << std::endl;
-		pum::vector2d contactpoint = (itr->second)->getglobalpos(itr->first);
-
-		//std::cout <<"contactpoint r " << contactpoint.x << " " << contactpoint.y << std::endl;
-		pum::vector2d r = contactpoint - (itr->second)->position;
-		//std::cout <<"var r " << r.x << " " << r.y << std::endl;
-		pum::vector2d rperp = pum::vector2d(-1.0 * r.y, 1.0 * r.x);
-		//std::cout << "rperp "<<rperp.x << " " << rperp.y << std::endl;
-		pum::vector2d angularlinearvelocity = rperp * ((itr->second)->deg2rad((itr->second)->angularvelocity));
-		//std::cout << "rperp " << ((itr->second)->velocity).x << " " << ((itr->second)->velocity).y << std::endl;
-		pum::vector2d relativevelocity = ((itr->second)->velocity + angularlinearvelocity);
-
-		/*pum::vector2d normal = relativevelocity;
-		normal.normalize();*/
-
-		//std::cout << "relative velocity "<<relativevelocity.x << " " << relativevelocity.y << std::endl;
-		float contactvelocitymag = pum::dotpro(relativevelocity, normal);
-		//std::cout << "contact velocity "<<contactvelocitymag<< std::endl;
-		
-
-		if (contactvelocitymag == 0.0)
-		{
-			continue;
-		}
-		//std::cout << "normal "<<normal.x << " " << normal.y << std::endl;
-		double raperpdotn = pum::dotpro(rperp, normal);
-
-		//std::cout << " raperpdotn " << raperpdotn<< std::endl;
-		//std::cout << " second inertiamass " << ((itr->second)->getInvInertia()) << std::endl;
-		double denom = (itr->second)->getInvMass() +
-			(raperpdotn * raperpdotn) * (itr->second)->getInvInertia();
-		//std::cout << " denom " << denom << std::endl;
-		double j = -1.0 * (1.0) * contactvelocitymag;
-		j = j / denom;
-
-		//std::cout << " impulse " << j << std::endl;
-		pum::vector2d impulse = normal * j;
-		(itr->second)->velocity = (itr->second)->velocity + (impulse * (itr->second)->getInvMass());
-		//std::cout << "second invmass " << ((itr->second)->getInvMass()) << std::endl;
-		pum::vector2d achange = (impulse * (itr->second)->getInvMass() * 1);
-		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
-		(itr->second)->angularvelocity += (itr->second)->rad2deg(pum::dotpro(rperp, impulse)) * (itr->second)->getInvInertia();
-		//std::cout << "angular velocity  " << ((itr->second)->angularvelocity) << std::endl;
-		//std::cout << "velocity " << ((itr->second)->velocity).x << " " << ((itr->second)->velocity).y << std::endl;
-		
-		
-		angularlinearvelocity = rperp * ((itr->second)->deg2rad((itr->second)->angularvelocity));
-		//std::cout << "rperp " << ((itr->second)->velocity).x << " " << ((itr->second)->velocity).y << std::endl;
-		relativevelocity = ((itr->second)->velocity + angularlinearvelocity);
-
-		/*pum::vector2d normal = relativevelocity;
-		normal.normalize();*/
-
-		//std::cout << "new relative velocity " << relativevelocity.x << " " << relativevelocity.y << std::endl;
-		contactvelocitymag = pum::dotpro(relativevelocity, normal);
-		//std::cout << " ew contact velocity "<<contactvelocitymag<< std::endl;
-		//std::cout << "  =============================== "<< std::endl;
-
-		//b->velocity = b->velocity + (impulse * b->getInvMass());
-		//pum::vector2d bchange = (impulse * b->getInvMass() * 1);
-		////std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
-		//b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, impulse)) * b->getInvInertia();
-
-	}
-}
-
-void PhysicsWorld::solvejoints2(joint* nail)
-{
-	// if there are zero or only one bodies are on the nail then skipping the next parts
-	if (nail->bodies.size() <= 1)
-	{
-		return;
-	}
-
-	//correcting the positions of the objects
-	long double masssum = 0;
-	pum::vector2d jointpos;
-	bool issomebodystatic = false;
-	for (auto& it : nail->bodies)
-	{
-		if (it.second->bodyType == RigidBody::Static)
-		{
-			//std::cout << "static " << std::endl;
-			issomebodystatic = true;
-			jointpos = (it.second)->getglobalpos(it.first);
-			//std::cout << "const pos " << (it.first.x) << " " << (it.first.y) << std::endl;
-			//std::cout << "curr pos " << jointpos.x << " " << jointpos.y << std::endl;
-			break;
-		}
-		pum::vector2d currpos = (it.second)->getglobalpos(it.first);
-		//std::cout << "const pos " << (it.first.x) << " " << (it.first.y) << std::endl;
-		//std::cout << "curr pos " << currpos.x << " " << currpos.y << std::endl;
-		jointpos = jointpos + (currpos * ((it.second)->mass));
-		masssum += ((it.second)->mass);
-	}
-	if (issomebodystatic == false)
-	{
-		jointpos = jointpos / masssum;
-	}
-	//std::cout << "joint pos " << jointpos.x << " " << jointpos.y << std::endl;
-	for(auto itr = begin(nail->bodies); itr != end(nail->bodies);itr++)
-	{
-		pum::vector2d posdiff = jointpos - (itr->second)->getglobalpos(itr->first);
-		(itr->second)->position = (itr->second)->position + posdiff;
-		//std::cout << " " << posdiff.x << " " << posdiff.y << std::endl;
-	}
-	//std::cout << std::endl;
-	
-
-	//correcintg the position
-
-	//drawing the joint point for debug
-	sf::CircleShape temp;
-	temp.setFillColor(sf::Color::Yellow);
-	temp.setRadius(4);
-	temp.setOrigin(2, 2);
-	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
-	(*(this->window)).draw(temp);
-
-	std::pair<pum::vector2d, RigidBody*> basebodydet = nail->bodies[0];
-	for (int i = 1; i < nail->bodies.size(); i++)
-	{
-		std::pair<pum::vector2d, RigidBody*> currbodydet = (nail->bodies)[i];
-		pum::vector2d normal = basebodydet.second->getglobalpos(basebodydet.first) - currbodydet.second->getglobalpos(currbodydet.first);
-		normal.normalize();
-
-		pum::vector2d ra = jointpos - (basebodydet.second->position);
-		pum::vector2d rb = jointpos - (currbodydet.second->position);
-
-		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.y);
-		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
-
-		pum::vector2d angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
-		pum::vector2d angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
-		pum::vector2d relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
-
-		//cout <<"relvel " << (relativevelocity.x) << " " << (relativevelocity.y) << endl;
-
-		normal = relativevelocity;
-		normal.normalize();
-		float contactvelocitymag = pum::dotpro(relativevelocity, normal);
-		//std::cout <<"normal "<< normal.x << " " << normal.y << std::endl;
-		if (normal == pum::vector2d(0, 0))
-		{
-
-		}
-		if (contactvelocitymag == 0.0)
-		{
-			continue;
-		}
-		//std::
-		//cout <<" contact vel " << contactvelocitymag << endl;
-		double raperpdotn = pum::dotpro(raperp, normal);
-		double rbperpdotn = pum::dotpro(rbperp, normal);
-
-		double denom = (basebodydet.second)->getInvMass() + (currbodydet.second)->getInvMass() +
-			(raperpdotn * raperpdotn) * (basebodydet.second)->getInvInertia() +
-			(rbperpdotn * rbperpdotn) * (currbodydet.second)->getInvInertia();
-
-		double j = -1.0 * (1.0) * contactvelocitymag;
-		j = j / denom;
-
-		pum::vector2d impulse = normal * j;
-		
-		(basebodydet.second)->velocity = (basebodydet.second)->velocity - (impulse * (basebodydet.second)->getInvMass());
-		pum::vector2d achange = (impulse * (basebodydet.second)->getInvMass() * -1);
-		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
-		(basebodydet.second)->angularvelocity -= (basebodydet.second)->rad2deg(pum::dotpro(raperp, impulse)) * (basebodydet.second)->getInvInertia();
-
-		(currbodydet.second)->velocity = (currbodydet.second)->velocity + (impulse * (currbodydet.second)->getInvMass());
-		pum::vector2d bchange = (impulse * (currbodydet.second)->getInvMass() * 1);
-		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
-		(currbodydet.second)->angularvelocity += (currbodydet.second)->rad2deg(pum::dotpro(rbperp, impulse)) * (currbodydet.second)->getInvInertia();
-
-
-	}
-	
-
-	//return;
-}
 
 void PhysicsWorld::solvejointswithfriction(joint* nail)
 {
@@ -647,7 +424,9 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 		//std::cout << "rbperdotn " << rbperpdotn << std::endl;
 		//std::cout << "invmass " << ((currbodydet.second)->getInvMass()) << "  inv inertia " << ((currbodydet.second)->getInvInertia()) << std::endl;
 		//std::cout << "denom " << denom << std::endl;
-		long double j = -1.0 * (1.0) * contactvelocitymag;
+		long double e = this->coeffofrestitution;
+		//e = 0;
+		long double j = -1.0 * (1.0 + e) * contactvelocitymag;
 		j = j / denom;
 		//std::cout << "j " << j << std::endl;
 		pum::vector2d impulse = normal * j;
@@ -686,7 +465,7 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 
 
 		//return;
-		//continue;
+		continue;
 
 		//starting the friction calculation from here......
 		pum::vector2d contactpoint1 = jointpos - (normal * (nail->radius));
@@ -779,6 +558,236 @@ void PhysicsWorld::solvejointswithfriction(joint* nail)
 
 
 }
+
+void PhysicsWorld::solvejointswithfriction2(joint* nail)
+{
+	// if there are zero or only one bodies are on the nail then skipping the next parts
+	if (nail->bodies.size() <= 1)
+	{
+		return;
+	}
+
+	//correcting the positions of the objects
+	long double masssum = 0;
+	pum::vector2d jointpos;
+	bool issomebodystatic = false;
+	for (auto& it : nail->bodies)
+	{
+		if (it.second->bodyType == RigidBody::Static)
+		{
+			issomebodystatic = true;
+			jointpos = (it.second)->getglobalpos(it.first);
+			break;
+		}
+		pum::vector2d currpos = (it.second)->getglobalpos(it.first);
+		jointpos = jointpos + (currpos * ((it.second)->mass));
+		masssum += ((it.second)->mass);
+	}
+	if (issomebodystatic == false)
+	{
+		jointpos = jointpos / masssum;
+	}
+	//cout << "joint pos " << jointpos.x<<" "<<jointpos.y << endl;
+	//correcting the position
+	
+	//drawing the joint point for debug
+	sf::CircleShape temp;
+	temp.setFillColor(sf::Color::Yellow);
+	temp.setRadius(4);
+	temp.setOrigin(2, 2);
+	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
+	(*(this->window)).draw(temp);
+	//std::cout << "solving joint with friction " << nail->staticfricitonconst << std::endl;
+	std::pair<pum::vector2d, RigidBody*> basebodydet = nail->bodies[0];
+	for (int i = 1; i < nail->bodies.size(); i++)
+	{
+		std::pair<pum::vector2d, RigidBody*> currbodydet = (nail->bodies)[i];
+		pum::vector2d normal = basebodydet.second->getglobalpos(basebodydet.first) - currbodydet.second->getglobalpos(currbodydet.first);
+		normal.normalize();
+
+		pum::vector2d ra = basebodydet.second->getglobalpos(basebodydet.first) - (basebodydet.second->position);
+		pum::vector2d rb = currbodydet.second->getglobalpos(currbodydet.first) - (currbodydet.second->position);
+		//std::cout << "rb " << rb.x << " " << rb.y << endl;
+		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
+		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
+
+		//(currbodydet.second)->velocity = pum::vector2d(73.8838 , -15.6203);
+		//(currbodydet.second)->velocity = pum::vector2d(-15.6203 , -15.6203);
+		//(currbodydet.second)->angularvelocity = -89.62;
+		//(currbodydet.second)->angularvelocity = 0;
+		pum::vector2d angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
+		pum::vector2d angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
+		pum::vector2d relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
+
+
+		/*normal = relativevelocity;
+		normal.normalize();*/
+		//normal = normal * -1;
+		//relativevelocity.makelen(18.8534);
+		//std::cout << "relvel orig " << (relativevelocity.x) << " " << relativevelocity.y << std::endl;
+		//std::cout <<"relvel orig length "<<(relativevelocity.length()) << std::endl;
+		//std::cout <<"normal "<< normal.x << " " << normal.y << std::endl;
+
+		long double contactvelocitymag = pum::dotpro(relativevelocity, normal);
+		//std::cout << "contact vel " << contactvelocitymag << std::endl;
+		/*if (normal == pum::vector2d(0, 0))
+		{
+			continue;
+		}
+		if (contactvelocitymag == 0.0)
+		{
+			continue;
+		}*/
+		long double raperpdotn = pum::dotpro(raperp, normal);
+		long double rbperpdotn = pum::dotpro(rbperp, normal);
+
+		long double denom = (basebodydet.second)->getInvMass() + (currbodydet.second)->getInvMass() +
+			(raperpdotn * raperpdotn) * (basebodydet.second)->getInvInertia() +
+			(rbperpdotn * rbperpdotn) * (currbodydet.second)->getInvInertia();
+		//long double denom = (currbodydet.second)->getInvMass() + (rbperpdotn * rbperpdotn) * (currbodydet.second)->getInvInertia();
+		//std::cout << "rbperdotn " << rbperpdotn << std::endl;
+		//std::cout << "invmass " << ((currbodydet.second)->getInvMass()) << "  inv inertia " << ((currbodydet.second)->getInvInertia()) << std::endl;
+		//std::cout << "denom " << denom << std::endl;
+		long double e = this->coeffofrestitution;
+		//e = 0;
+		long double j = -1.0 * (1.0 + 1.0) * contactvelocitymag;
+		j = j / denom;
+		//std::cout << "j " << j << std::endl;
+		pum::vector2d impulse = normal * j;
+		//std::cout << "impulse " <p< impulse.x<<" "<<impulse.y << std::endl;
+		//std::cout << "prev vel basebody  " << ((basebodydet.second)->velocity).x<<" "<< ((basebodydet.second)->velocity).y << std::endl;
+		(basebodydet.second)->velocity = (basebodydet.second)->velocity - (impulse * (basebodydet.second)->getInvMass());
+		//std::cout << "next vel basebody " << ((basebodydet.second)->velocity).x<<" "<< ((basebodydet.second)->velocity).y << std::endl;
+		pum::vector2d achange = (impulse * (basebodydet.second)->getInvMass() * -1);
+		//std::cout << "prev angular vel basebody " << ((basebodydet.second)->angularvelocity) << std::endl;
+		//std::cout << "raperp " << raperp.x << " " << raperp.y << std::endl;
+		(basebodydet.second)->angularvelocity -= (basebodydet.second)->rad2deg(pum::dotpro(raperp, impulse)) * (basebodydet.second)->getInvInertia();
+		//std::cout << "next angular vel basebody " << (((basebodydet.second)->angularvelocity)) << std::endl;
+
+		//std::cout << "prev vel " << ((currbodydet.second)->velocity).x<<" "<< ((currbodydet.second)->velocity).y << std::endl;
+		(currbodydet.second)->velocity = (currbodydet.second)->velocity + (impulse * (currbodydet.second)->getInvMass());
+		//std::cout << "prev vel " << ((currbodydet.second)->velocity) << std::endl;
+		//std::cout << "next vel " << ((currbodydet.second)->velocity).x<<" "<< ((currbodydet.second)->velocity).y << std::endl;
+		pum::vector2d bchange = (impulse * (currbodydet.second)->getInvMass() * -1);
+		//std::cout << "prev angular vel " << ((currbodydet.second)->angularvelocity) << std::endl;
+		//std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
+		(currbodydet.second)->angularvelocity += (currbodydet.second)->rad2deg(pum::dotpro(rbperp, impulse)) * (currbodydet.second)->getInvInertia();
+		//std::cout << "next angular vel " << (((currbodydet.second)->angularvelocity)) << std::endl;
+
+
+		//std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
+		angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
+		angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
+		//cout << "angulatlinear velocity " << (angularlinearvelocityb.x) << " " << (angularlinearvelocityb.y) << endl;
+		relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
+		//std::cout << "relvel " << (relativevelocity.x) << " " << relativevelocity.y << std::endl;
+		//std::cout<<"rel vel length "<<(relativevelocity.length())<<std::endl;
+		//std::cout << "contact vel length " << (pum::dotpro(relativevelocity, normal)) << std::endl;
+		//std::cout << std::endl;
+
+
+		//return;
+		//continue;
+		//recalculating the normal for friction constant
+		normal = relativevelocity;
+		normal.normalize();
+
+		//starting the friction calculation from here......
+		pum::vector2d contactpoint1 = jointpos - (normal * (nail->radius));
+
+
+		ra = contactpoint1 - (basebodydet.second)->position;
+		rb = contactpoint1 - (currbodydet.second)->position;
+
+		raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
+		rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
+
+		angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
+		angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
+		relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
+
+		contactvelocitymag = pum::dotpro(relativevelocity, normal);
+
+
+		pum::vector2d tangent = relativevelocity - (normal * contactvelocitymag);
+		//std::cout << "static relvel orig " << (relativevelocity.length()) << std::endl;
+		//std::cout << "tangetwith mag " << tangent.x << " " << tangent.y << std::endl;
+		if (this->nearlyequal(tangent, pum::vector2d(0, 0)))
+		{
+			continue;
+		}
+		else
+		{
+			tangent.normalize();
+		}
+
+
+		double raperpdott = pum::dotpro(raperp, tangent);
+		double rbperpdott = pum::dotpro(rbperp, tangent);
+
+		denom = (basebodydet.second)->getInvMass() + (currbodydet.second)->getInvMass() +
+			(raperpdott * raperpdott) * (basebodydet.second)->getInvInertia() +
+			(rbperpdott * rbperpdott) * (currbodydet.second)->getInvInertia();
+
+		//std::cout << "contact vel friction " << pum::dotpro(relativevelocity, tangent) << std::endl;
+		double jf = -1.0 * pum::dotpro(relativevelocity, tangent);
+		jf = jf / denom;
+
+		pum::vector2d frictionimpulse;
+
+		double sf = nail->staticfricitonconst;// std::min((basebodydet.second)->staticfriction, (currbodydet.second)->staticfriction);
+		//cout << "impulse needed " << abs(jf) << endl;
+		//cout << "impulse provided " << (abs(j * sf))<<" j= "<<j << endl;
+		if (std::abs(jf) <= abs(j * sf))
+		{
+			//std::cout << "enough friciton" << std::endl;
+			frictionimpulse = tangent * jf;
+		}
+		else
+		{
+			//std::cout << "not enough friciton" << std::endl;
+			double sign = jf / std::abs(jf);
+			frictionimpulse = tangent * (sign * abs(j) * sf);
+		}
+
+
+		(basebodydet.second)->velocity = (basebodydet.second)->velocity - (frictionimpulse * (basebodydet.second)->getInvMass());
+		achange = (frictionimpulse * (basebodydet.second)->getInvMass() * -1);
+		//std::cout << "avel " << ((basebodydet.second)->velocity.x) << " " << ((basebodydet.second)->velocity.y) << std::endl;
+		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
+		(basebodydet.second)->angularvelocity -= (basebodydet.second)->rad2deg(pum::dotpro(raperp, frictionimpulse)) * (basebodydet.second)->getInvInertia();
+
+
+		//std::cout << "bvel prev " << ((currbodydet.second)->velocity.x) << " " << ((currbodydet.second)->velocity.y) << std::endl;
+		(currbodydet.second)->velocity = (currbodydet.second)->velocity + (frictionimpulse * (currbodydet.second)->getInvMass());
+		bchange = (frictionimpulse * (currbodydet.second)->getInvMass() * -1);
+		//std::cout << "bvel " << ((currbodydet.second)->velocity.x) << " " << ((currbodydet.second)->velocity.y) << std::endl;
+		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
+		(currbodydet.second)->angularvelocity += (currbodydet.second)->rad2deg(pum::dotpro(rbperp, frictionimpulse)) * (currbodydet.second)->getInvInertia();
+		//std::cout << "a angulat vel " << ((currbodydet.second)->angularvelocity) << std::endl;
+
+		angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
+		angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
+		relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
+
+
+		//std::cout << "static friciton " << (nail->staticfricitonconst) << " " << (relativevelocity.length()) << std::endl;
+		//cout << "contact vel rem " << pum::dotpro(relativevelocity, tangent) << endl;
+
+
+	}
+	//cout << endl;
+	//std::cout << " ============= " << std::endl;
+	for (auto itr = begin(nail->bodies); itr != end(nail->bodies); itr++)
+	{
+		pum::vector2d posdiff = jointpos - (itr->second)->getglobalpos(itr->first);
+		(itr->second)->setpositon((itr->second)->position + posdiff);
+	}
+
+
+
+}
+
 
 void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, collisionresult collision, contactdetail contact)
 {

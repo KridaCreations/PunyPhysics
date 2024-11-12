@@ -42,6 +42,8 @@ public:
 
 	void solvejointswithfriction(joint* nail);
 
+	void solvejointswithfriction2(joint* nail);
+
 
 	void addbody(RigidBody* body);
 	void removeBody(RigidBody* body);

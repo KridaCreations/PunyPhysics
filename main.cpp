@@ -21,7 +21,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width,height), "Window Title", sf::Style::Titlebar | sf::Style::Close);
     //win = &window;
     PhysicsWorld::getInstance()->window = &window;
-    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 10);
+    PhysicsWorld::getInstance()->gravity = pum::vector2d(0, 1000);
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
@@ -97,34 +97,37 @@ int main()
     PhysicsWorld::getInstance()->joints.push_back(j);
 
     Rectangle* bar2 = new Rectangle(sf::Vector2f(600,490), 20, 80, 100, false);
-    bar2->physicsbody->velocity = pum::vector2d(1000,0);
+    //bar2->physicsbody->velocity = pum::vector2d(1000,0);
     rectangles.push_back(bar2);
 
     j->addbodies(bar->physicsbody, pum::vector2d(150, 0));
     j->addbodies(bar2->physicsbody, pum::vector2d(0,-40));
 
 
+    if (false)
+    {
 
-    joint* j2 = new joint(100000, false);
-    j2->staticfricitonconst = 99999999999.05;
-    PhysicsWorld::getInstance()->joints.push_back(j2);
+        joint* j2 = new joint(100000000, false);
+        j2->staticfricitonconst = 0.3;// 99999999999.05;
+        PhysicsWorld::getInstance()->joints.push_back(j2);
 
-    Rectangle* bar3 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
-    rectangles.push_back(bar3);
+        Rectangle* bar3 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
+        rectangles.push_back(bar3);
 
-    j2->addbodies(bar2->physicsbody, pum::vector2d(0,40));
-    j2->addbodies(bar3->physicsbody, pum::vector2d(0, -40));
+        j2->addbodies(bar2->physicsbody, pum::vector2d(0,40));
+        j2->addbodies(bar3->physicsbody, pum::vector2d(0, -40));
 
 
-    joint* j3 = new joint(100000, false);
-    j3->staticfricitonconst = 99999999999.05;
-    PhysicsWorld::getInstance()->joints.push_back(j3);
+        joint* j3 = new joint(100000000, false);
+        j3->staticfricitonconst = 0.3;// 99999999999.05;
+        PhysicsWorld::getInstance()->joints.push_back(j3);
 
-    Rectangle* bar4 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
-    rectangles.push_back(bar4);
+        Rectangle* bar4 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
+        rectangles.push_back(bar4);
 
-    j3->addbodies(bar3->physicsbody, pum::vector2d(0, 40));
-    j3->addbodies(bar4->physicsbody, pum::vector2d(0, -40));
+        j3->addbodies(bar3->physicsbody, pum::vector2d(0, 40));
+        j3->addbodies(bar4->physicsbody, pum::vector2d(0, -40));
+    }
 
    
 
@@ -169,8 +172,8 @@ int main()
         double usec = deltatime.asMicroseconds();
         gameClock.restart(); //timer restart
         //std::cout << (usec / 1000000.000) << std::endl;
-        //double deltatimeconst = (usec / 1000000.00);// 0.0005;
-        double deltatimeconst = 0.00005;
+        double deltatimeconst = (usec / 1000000.00);// 0.0005;
+        //double deltatimeconst = 0.05;
         //std::cout << deltatimeconst << std::endl;
         PhysicsWorld::getInstance()->process(deltatimeconst);
 
