@@ -44,6 +44,10 @@ void PhysicsWorld::collisionDetection()
 				continue;
 			}
 
+			if (((((*itr1)->mask) & ((*itr2)->layer)).count() == 0) && ((((*itr1)->layer) & ((*itr2)->mask)).count() == 0))
+			{
+				continue;
+			}
 			//checking collision
 			if (((*itr1)->shapetype == RigidBody::Rectangle) && ((*itr2)->shapetype == RigidBody::Circle))
 			{
@@ -111,7 +115,7 @@ void PhysicsWorld::collisionDetection()
 					//drawing collision point
 					sf::CircleShape temp1;
 					temp1.setFillColor(sf::Color::Red);
-					temp1.setRadius(4);
+					temp1.setRadius(10);
 					temp1.setOrigin(2, 2);
 					temp1.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
 					(*(this->window)).draw(temp1);
@@ -593,7 +597,7 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 	//drawing the joint point for debug
 	sf::CircleShape temp;
 	temp.setFillColor(sf::Color::Yellow);
-	temp.setRadius(4);
+	temp.setRadius(10);
 	temp.setOrigin(2, 2);
 	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
 	(*(this->window)).draw(temp);

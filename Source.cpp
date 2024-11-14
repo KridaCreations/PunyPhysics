@@ -69,3 +69,125 @@
 //    ImGui::SFML::Shutdown();
 //    return 0;
 //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////// to use for later
+
+/*
+
+
+for (int i = 0; i < 3; i++)
+    {
+        int x = rand() % 400 + 100;
+        int y = rand() % 400 + 100;
+        int col = rand() % colorlist.size();
+        Circle*  temp = new Circle(sf::Vector2f(x,y), 20, 100, false, RigidBody::Rigid,colorlist[col]);
+        circles.push_back(temp);
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        //int x = rand() % 500 + 100;
+        //int y = rand() % 500 + 100;
+        int x = 300;
+        int y = 300;
+        int col = rand() % colorlist.size();
+        //std::cout << "adding a rect at " << x << " " << y << std::endl;
+        Rectangle* temp = new Rectangle(sf::Vector2f(x, y),40,40, 100, false, RigidBody::Rigid, colorlist[col]);
+        //temp->physicsbody->rotate(2);
+        rectangles.push_back(temp);
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        //int x = rand() % 500 + 100;
+        //int y = rand() % 500 + 100;
+        int x = 300;
+        int y = 100;
+        int col = rand() % colorlist.size();
+        int radiilen = 10;
+        pum::vector2d temppum(0, 1);
+        temppum.makelen(30);
+        sf::Vector2f temp(temppum.x, temppum.y);
+        std:vector<sf::Vector2f>p;
+        int sides = 6;
+        for (int j = 0; j < sides; j++)
+        {
+            p.push_back(temp + sf::Vector2f(x, y));
+            //std::cout << temp.x << " " << temp.y << std::endl;
+            double rad = ((360/sides) * 3.14) / 180.0;// this->angle);
+            temp = sf::Vector2f(((temp.x * cos(rad)) - (temp.y * sin(rad))), ((temp.x * sin(rad)) + (temp.y * cos(rad))));
+        }
+        Polygon* tempbody = new Polygon(sf::Vector2f(x, y), p, 40, false,RigidBody::Rigid, colorlist[col]);
+        polygons.push_back(tempbody);
+    }
+
+
+    Rectangle* bar = new Rectangle(sf::Vector2f(450, 450), 300, 50, 1000, false, RigidBody::Static);
+    bar->physicsbody->angularvelocity = -40;
+    //bar->physicsbody->velocity = sf::Vector2f(0, -10.0);
+    //bar->physicsbody->rotate(20);
+    rectangles.push_back(bar);
+    bar->physicsbody->mask.reset();
+    bar->physicsbody->layer.reset();
+
+    joint* j = new joint(10, false);
+    j->staticfricitonconst = 0.00;
+    PhysicsWorld::getInstance()->joints.push_back(j);
+
+    Rectangle* bar2 = new Rectangle(sf::Vector2f(600,490), 20, 80, 100, false);
+    bar2->physicsbody->velocity = pum::vector2d(1000,0);
+    rectangles.push_back(bar2);
+
+    j->addbodies(bar->physicsbody, pum::vector2d(150, -25));
+    j->addbodies(bar2->physicsbody, pum::vector2d(-10,-40));
+
+
+    if (true)
+    {
+
+        joint* j2 = new joint(10, false);
+        j2->staticfricitonconst = 0.3;// 99999999999.05;
+        PhysicsWorld::getInstance()->joints.push_back(j2);
+
+        Rectangle* bar3 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
+        rectangles.push_back(bar3);
+
+        j2->addbodies(bar2->physicsbody, pum::vector2d(10,40));
+        j2->addbodies(bar3->physicsbody, pum::vector2d(-10, -40));
+
+
+        joint* j3 = new joint(10, false);
+        j3->staticfricitonconst = 0.3;// 99999999999.05;
+        PhysicsWorld::getInstance()->joints.push_back(j3);
+
+        Rectangle* bar4 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
+        rectangles.push_back(bar4);
+
+        j3->addbodies(bar3->physicsbody, pum::vector2d(10, 40));
+        j3->addbodies(bar4->physicsbody, pum::vector2d(-10, -40));
+
+        joint* j4 = new joint(10, false);
+        j4->staticfricitonconst = 0.3;// 99999999999.05;
+        PhysicsWorld::getInstance()->joints.push_back(j4);
+
+        Rectangle* bar5 = new Rectangle(sf::Vector2f(600, 490), 20, 80, 10, false);
+        rectangles.push_back(bar5);
+
+        j4->addbodies(bar4->physicsbody, pum::vector2d(10, 40));
+        j4->addbodies(bar5->physicsbody, pum::vector2d(-10, -40));
+    }
+
+
+*/

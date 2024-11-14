@@ -6,6 +6,8 @@ RigidBody::RigidBody(double mass, pum::vector2d velocity, pum::vector2d accelera
 	this->coefficientOfStaticFriction = coefficientOfStaticFriction;
 	this->coefficientOfKineticFriction = coefficientOfKineticFriction;
 	this->bodyType = bodytype;
+	mask.set(1);
+	layer.set(1);
 }
 
 double RigidBody::getInvMass()

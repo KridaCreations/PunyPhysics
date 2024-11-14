@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "pum.h"
+#include <bitset>
 
 class RigidBody
 {
@@ -27,7 +28,8 @@ public:
 		pum::vector2d velocity;
 		pum::vector2d acceleration;
 		pum::vector2d position;
-
+		std::bitset<32>mask;
+		std::bitset<32>layer;
 		double kineticfriction = 0.6;
 		double staticfriction = 100;
 		double angle = 0;
