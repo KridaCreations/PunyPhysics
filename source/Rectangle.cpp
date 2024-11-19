@@ -32,8 +32,8 @@ void Rectangle::draw(sf::RenderWindow& window)
 	this->boundbox.setFillColor(sf::Color::Transparent);
 	this->boundbox.setOutlineColor(sf::Color::White);
 	this->boundbox.setOutlineThickness(2);
-	//window.draw(this->shape);
-	window.draw(this->boundbox);
+	window.draw(this->shape);
+	//window.draw(this->boundbox);
 }
 
 void Rectangle::process(double delta)

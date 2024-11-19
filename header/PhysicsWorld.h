@@ -10,6 +10,7 @@
 #include "imgui.h"
 #include "pum.h"
 #include "joint.h"
+#include "spring.h"
 #include <math.h>
 
 class PhysicsWorld
@@ -36,13 +37,14 @@ public:
 
 	void calculatemovement(double delta);
 	void collisionDetection();
-	void constraintsolving();
+	void constraintsolving(double delta);
 	void solvejoints(joint* nail);
 	void solvejoints2(joint* nail);
 
 	void solvejointswithfriction(joint* nail);
-
 	void solvejointswithfriction2(joint* nail);
+
+	void solvespring(spring* spr,double delta);
 
 
 	void addbody(RigidBody* body);
@@ -52,6 +54,8 @@ public:
 	int framecount = 0;
 	std::vector<RigidBody*>bodies;
 	std::vector<joint*>joints;
+	std::vector<spring*>springs;
+
 	pum::vector2d gravity = pum::vector2d(0.0, 0.0);
 	double coeffofrestitution = 0.3;
 	sf::RenderWindow* window;

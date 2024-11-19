@@ -155,6 +155,7 @@
     <ClCompile Include="source\RigidCircleShape.cpp" />
     <ClCompile Include="source\RigidPolygonShape.cpp" />
     <ClCompile Include="source\RigidRectangelShape.cpp" />
+    <ClCompile Include="source\spring.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="header\Circle.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="header\RigidCircleShape.h" />
     <ClInclude Include="header\RigidPolygonShape.h" />
     <ClInclude Include="header\RigidRectangelShape.h" />
+    <ClInclude Include="header\spring.h" />
     <ClInclude Include="imgui\imconfig-SFML.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui-SFML.h" />

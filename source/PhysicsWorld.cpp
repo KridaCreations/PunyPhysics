@@ -19,13 +19,13 @@ void PhysicsWorld::removeBody(RigidBody* body)
 void PhysicsWorld::process(double delta)
 {
 	framecount++;
-	int maxiterations = 8;
+	int maxiterations = 80;
 	delta = delta / (double)maxiterations;
 	for (int i = 0; i < maxiterations; i++)
 	{
 		calculatemovement(delta);
 		collisionDetection();
-		constraintsolving();
+		constraintsolving(delta);
 	}
 }
 
@@ -115,7 +115,7 @@ void PhysicsWorld::collisionDetection()
 					//drawing collision point
 					sf::CircleShape temp1;
 					temp1.setFillColor(sf::Color::Red);
-					temp1.setRadius(10);
+					temp1.setRadius(5);
 					temp1.setOrigin(2, 2);
 					temp1.setPosition(sf::Vector2f(det.contactpoint1.x, det.contactpoint1.y));
 					(*(this->window)).draw(temp1);
@@ -310,13 +310,17 @@ void PhysicsWorld::collisionDetection()
 	}
 }
 
-void PhysicsWorld::constraintsolving()
+void PhysicsWorld::constraintsolving(double delta)
 {
 	for (auto& it : joints)
 	{
 		solvejointswithfriction2(it);
 	}
-	//cout << "======" << endl;
+
+	for (auto& it : springs)
+	{
+		solvespring(it,delta);
+	}
 }
 
 
@@ -597,7 +601,7 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 	//drawing the joint point for debug
 	sf::CircleShape temp;
 	temp.setFillColor(sf::Color::Yellow);
-	temp.setRadius(10);
+	temp.setRadius(5);
 	temp.setOrigin(2, 2);
 	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
 	(*(this->window)).draw(temp);
@@ -792,6 +796,90 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 
 }
 
+void PhysicsWorld::solvespring(spring* spr,double delta)
+{
+	pum::vector2d pos1 = spr->body1->getglobalpos(spr->body1point);
+	pum::vector2d pos2 = spr->body2->getglobalpos(spr->body2point);
+
+	
+	
+	//solving distance constraint
+	double dis = (pos1 - pos2).length();
+	pum::vector2d reldis = pos2 - pos1;
+	double tomove = 0;
+	if (dis > spr->maxlen)
+	{
+		//tomove = spr->maxlen - dis;
+	}
+	else if (dis < spr->minlen)
+	{
+		//tomove = spr->minlen - dis;
+	}
+	//cout << "tomove " << tomove << endl;
+	reldis.normalize();
+	//cout << "reldis " << reldis.x << " " << reldis.y << endl;
+
+	separateBodies(spr->body1, spr->body2, reldis, -1.0 *tomove);
+	dis = (pos1 - pos2).length();
+	reldis = pos2 - pos1;
+	double x = dis - spr->length;
+
+
+	sf::Color col;
+	if (x > 0)
+	{
+		col = sf::Color::Red;
+	}
+	else
+	{
+		col = sf::Color::Yellow;
+	}
+	sf::RectangleShape line(sf::Vector2f(dis, 10));
+	line.setFillColor(col);
+	line.setOrigin(sf::Vector2f(dis / 2, 5));
+	line.setPosition(sf::Vector2f((pos1.x + pos2.x)/2.0,(pos1.y + pos2.y)/2.0));
+
+
+	double costheta = pum::dotpro(pum::vector2d(dis, 10), reldis) / ((std::sqrt((dis*dis) + (100)) * reldis.length()));
+
+	line.setRotation(pum::rad2deg( std::acos(costheta)));
+	this->window->draw(line);
+
+	reldis.normalize();
+	spr->springconstant = 9000;
+
+	pum::vector2d impulse = reldis * (spr->springconstant * x * -1 * delta);
+
+	//cout << "impulse " << impulse.x << " " << impulse.y << endl;
+	//cout << "impulse " << impulse.x << " " << impulse.y << endl;
+	pum::vector2d ra = pos1 - spr->body1->position;
+	pum::vector2d rb = pos2 - spr->body2->position;
+
+	pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
+	pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
+	pum::vector2d angularlinearvelocitya = raperp * (spr->body1->deg2rad(spr->body1->angularvelocity));
+	pum::vector2d angularlinearvelocityb = rbperp * (spr->body2->deg2rad(spr->body2->angularvelocity));
+	pum::vector2d relativevelocity = (spr->body2->velocity + angularlinearvelocityb) - (spr->body1->velocity + angularlinearvelocitya);
+	
+	impulse = impulse + (relativevelocity * (spr->coefficientofdamping) * -1.0 * delta);
+
+
+	spr->body1->velocity = spr->body1->velocity - (impulse * spr->body1->getInvMass());
+	pum::vector2d achange = (impulse * spr->body1->getInvMass() * -1);
+	//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
+	spr->body1->angularvelocity -= spr->body1->rad2deg(pum::dotpro(raperp,impulse)) * spr->body1->getInvInertia();
+
+
+	spr->body2->velocity = spr->body2->velocity + (impulse * spr->body2->getInvMass());
+	pum::vector2d bchange = (impulse * spr->body2->getInvMass() * -1);
+	//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
+	spr->body2->angularvelocity += spr->body2->rad2deg(pum::dotpro(rbperp,impulse)) * spr->body2->getInvInertia();
+
+
+
+}
+
+
 
 void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, collisionresult collision, contactdetail contact)
 {
@@ -958,9 +1046,7 @@ void PhysicsWorld::calculatemovement(double delta)
 
 		if (it->bodyType == RigidBody::Static)
 		{
-			//cout << "prev vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			it->velocity = it->velocity + (it->acceleration * delta);
-			//cout << "next vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			if (this->nearlyequal(it->velocity, pum::vector2d(0, 0)))
 			{
 				it->velocity = pum::vector2d(0, 0);
@@ -968,9 +1054,7 @@ void PhysicsWorld::calculatemovement(double delta)
 		}
 		else
 		{
-			//cout << "prev vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			it->velocity = it->velocity + ((it->acceleration + this->gravity) * delta);
-			//cout << "next vel " << (it->velocity).x << " " << (it->velocity).y << endl;
 			if (this->nearlyequal(it->velocity, pum::vector2d(0, 0)))
 			{
 				it->velocity = pum::vector2d(0, 0);

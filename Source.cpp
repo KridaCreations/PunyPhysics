@@ -191,3 +191,55 @@ for (int i = 0; i < 3; i++)
 
 
 */
+
+
+/*
+
+//drawing the engine
+
+    //drawing the center of the wheel
+
+    Rectangle* rod1 = new Rectangle(sf::Vector2f(450,450), 80,10, 100, false,RigidBody::Static,sf::Color::Green);
+    rod1->physicsbody->angularvelocity = 500;
+    rectangles.push_back(rod1);
+    rod1->physicsbody->mask.reset();
+    rod1->physicsbody->layer.reset();
+    //
+
+    Rectangle* rod2 = new Rectangle(sf::Vector2f(450 + 20, 450 + 2), 10, 300, 100, false,RigidBody::Rigid,sf::Color::White);
+    rectangles.push_back(rod2);
+    rod2->physicsbody->mask.reset();
+    rod2->physicsbody->layer.reset();
+    //
+
+    //joint between rod1 and rod2
+    joint* j = new joint(10, false);
+    j->staticfricitonconst = 0.00;
+    PhysicsWorld::getInstance()->joints.push_back(j);
+    j->addbodies(rod1->physicsbody, pum::vector2d(40, 0));
+    j->addbodies(rod2->physicsbody, pum::vector2d(0,150));
+
+
+    //adding piston
+    Rectangle* piston = new Rectangle(sf::Vector2f(450,450-80-50),80,50, 100, false);
+    rectangles.push_back(piston);
+
+    //joint between piston and rod2
+    joint* j1 = new joint(10, false);
+    j1->staticfricitonconst = 0.00;
+    PhysicsWorld::getInstance()->joints.push_back(j1);
+    j1->addbodies(piston->physicsbody, pum::vector2d(0, 0));
+    j1->addbodies(rod2->physicsbody, pum::vector2d(0, -150));
+
+
+    ////adding the walls of the engine
+    Rectangle* wallleft = new Rectangle(sf::Vector2f(450 - 40 - 5, 150), 10, 200, 100, false,RigidBody::Static,sf::Color::Yellow);
+    rectangles.push_back(wallleft);
+
+    Rectangle* wallright = new Rectangle(sf::Vector2f(450 + 40 + 5, 150), 10, 200, 100, false,RigidBody::Static, sf::Color::Yellow);
+    rectangles.push_back(wallright);
+
+
+
+
+*/
