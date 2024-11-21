@@ -243,3 +243,28 @@ for (int i = 0; i < 3; i++)
 
 
 */
+
+
+
+/*
+//spring simulations
+Rectangle* bar = new Rectangle(sf::Vector2f(450, 450), 300, 50, 1000, false, RigidBody::Static);
+    rectangles.push_back(bar);
+    bar->physicsbody->mask.reset();
+    bar->physicsbody->layer.reset();
+
+    Rectangle* bar2 = new Rectangle(sf::Vector2f(450, 490), 20, 80, 1000, false);
+    bar2->physicsbody->velocity = pum::vector2d(0, 0);
+    rectangles.push_back(bar2);
+
+    spring* s1 = new spring(bar->physicsbody,pum::vector2d(100,0),bar2->physicsbody,pum::vector2d(0,40));
+    s1->minlen = 100;
+    s1->length = 150;
+    s1->maxlen = 200;
+
+    PhysicsWorld::getInstance()->springs.push_back(s1);
+
+
+
+
+*/

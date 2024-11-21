@@ -10,7 +10,7 @@ Circle::Circle(sf::Vector2f pos, double radius, double mass, bool control,RigidB
 	this->shape.setOrigin(sf::Vector2f(radius, radius));
 	this->shape.setRadius(radius);
 	this->shape.setOutlineThickness(2);
-	this->shape.setPointCount(15);
+	this->shape.setPointCount(8);
 	this->control = control;
 	PhysicsWorld::getInstance()->addbody(this->physicsbody);
 }

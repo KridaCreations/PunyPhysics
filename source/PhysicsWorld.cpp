@@ -602,7 +602,7 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 	sf::CircleShape temp;
 	temp.setFillColor(sf::Color::Yellow);
 	temp.setRadius(5);
-	temp.setOrigin(2, 2);
+	temp.setOrigin(2.5, 2.5);
 	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
 	(*(this->window)).draw(temp);
 	//std::cout << "solving joint with friction " << nail->staticfricitonconst << std::endl;
