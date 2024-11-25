@@ -30,6 +30,8 @@ public:
 		pum::vector2d position;
 		std::bitset<32>mask;
 		std::bitset<32>layer;
+		pum::vector2d constforce;
+		long double constantTorque;
 		double kineticfriction = 0.6;
 		double staticfriction = 100;
 		double angle = 0;
@@ -51,6 +53,13 @@ public:
 		long double deg2rad(double deg);
 		long double rad2deg(double rad);
 		pum::vector2d getglobalpos(pum::vector2d local_pos);
+		void applyImpulse(pum::vector2d impulse,pum::vector2d position);
+		void applyCentralImpulse(pum::vector2d impulse);
+		void applyRotationalImpulse(long double torque);
+		void applyForce(pum::vector2d force , pum::vector2d position);
+		void applyCentralForce(pum::vector2d force);
+		void applyTorque(long double torque);
+
 
 		virtual void setrotation(double angle);
 		virtual void setpositon(pum::vector2d pos);

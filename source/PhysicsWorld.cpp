@@ -595,7 +595,6 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 	{
 		jointpos = jointpos / masssum;
 	}
-	//cout << "joint pos " << jointpos.x<<" "<<jointpos.y << endl;
 	//correcting the position
 	
 	//drawing the joint point for debug
@@ -605,7 +604,6 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 	temp.setOrigin(2.5, 2.5);
 	temp.setPosition(sf::Vector2f(jointpos.x, jointpos.y));
 	(*(this->window)).draw(temp);
-	//std::cout << "solving joint with friction " << nail->staticfricitonconst << std::endl;
 	std::pair<pum::vector2d, RigidBody*> basebodydet = nail->bodies[0];
 	for (int i = 1; i < nail->bodies.size(); i++)
 	{
@@ -615,87 +613,41 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 
 		pum::vector2d ra = basebodydet.second->getglobalpos(basebodydet.first) - (basebodydet.second->position);
 		pum::vector2d rb = currbodydet.second->getglobalpos(currbodydet.first) - (currbodydet.second->position);
-		//std::cout << "rb " << rb.x << " " << rb.y << endl;
+
 		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
 		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
 
-		//(currbodydet.second)->velocity = pum::vector2d(73.8838 , -15.6203);
-		//(currbodydet.second)->velocity = pum::vector2d(-15.6203 , -15.6203);
-		//(currbodydet.second)->angularvelocity = -89.62;
-		//(currbodydet.second)->angularvelocity = 0;
 		pum::vector2d angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
 		pum::vector2d angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
 		pum::vector2d relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
 
-
-		/*normal = relativevelocity;
-		normal.normalize();*/
-		//normal = normal * -1;
-		//relativevelocity.makelen(18.8534);
-		//std::cout << "relvel orig " << (relativevelocity.x) << " " << relativevelocity.y << std::endl;
-		//std::cout <<"relvel orig length "<<(relativevelocity.length()) << std::endl;
-		//std::cout <<"normal "<< normal.x << " " << normal.y << std::endl;
-
 		long double contactvelocitymag = pum::dotpro(relativevelocity, normal);
-		//std::cout << "contact vel " << contactvelocitymag << std::endl;
-		/*if (normal == pum::vector2d(0, 0))
-		{
-			continue;
-		}
-		if (contactvelocitymag == 0.0)
-		{
-			continue;
-		}*/
+		
 		long double raperpdotn = pum::dotpro(raperp, normal);
 		long double rbperpdotn = pum::dotpro(rbperp, normal);
 
 		long double denom = (basebodydet.second)->getInvMass() + (currbodydet.second)->getInvMass() +
 			(raperpdotn * raperpdotn) * (basebodydet.second)->getInvInertia() +
 			(rbperpdotn * rbperpdotn) * (currbodydet.second)->getInvInertia();
-		//long double denom = (currbodydet.second)->getInvMass() + (rbperpdotn * rbperpdotn) * (currbodydet.second)->getInvInertia();
-		//std::cout << "rbperdotn " << rbperpdotn << std::endl;
-		//std::cout << "invmass " << ((currbodydet.second)->getInvMass()) << "  inv inertia " << ((currbodydet.second)->getInvInertia()) << std::endl;
-		//std::cout << "denom " << denom << std::endl;
+		
 		long double e = this->coeffofrestitution;
-		//e = 0;
+		
 		long double j = -1.0 * (1.0 + 1.0) * contactvelocitymag;
 		j = j / denom;
-		//std::cout << "j " << j << std::endl;
+		
 		pum::vector2d impulse = normal * j;
-		//std::cout << "impulse " <p< impulse.x<<" "<<impulse.y << std::endl;
-		//std::cout << "prev vel basebody  " << ((basebodydet.second)->velocity).x<<" "<< ((basebodydet.second)->velocity).y << std::endl;
 		(basebodydet.second)->velocity = (basebodydet.second)->velocity - (impulse * (basebodydet.second)->getInvMass());
-		//std::cout << "next vel basebody " << ((basebodydet.second)->velocity).x<<" "<< ((basebodydet.second)->velocity).y << std::endl;
 		pum::vector2d achange = (impulse * (basebodydet.second)->getInvMass() * -1);
-		//std::cout << "prev angular vel basebody " << ((basebodydet.second)->angularvelocity) << std::endl;
-		//std::cout << "raperp " << raperp.x << " " << raperp.y << std::endl;
 		(basebodydet.second)->angularvelocity -= (basebodydet.second)->rad2deg(pum::dotpro(raperp, impulse)) * (basebodydet.second)->getInvInertia();
-		//std::cout << "next angular vel basebody " << (((basebodydet.second)->angularvelocity)) << std::endl;
-
-		//std::cout << "prev vel " << ((currbodydet.second)->velocity).x<<" "<< ((currbodydet.second)->velocity).y << std::endl;
 		(currbodydet.second)->velocity = (currbodydet.second)->velocity + (impulse * (currbodydet.second)->getInvMass());
-		//std::cout << "prev vel " << ((currbodydet.second)->velocity) << std::endl;
-		//std::cout << "next vel " << ((currbodydet.second)->velocity).x<<" "<< ((currbodydet.second)->velocity).y << std::endl;
 		pum::vector2d bchange = (impulse * (currbodydet.second)->getInvMass() * -1);
-		//std::cout << "prev angular vel " << ((currbodydet.second)->angularvelocity) << std::endl;
-		//std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
 		(currbodydet.second)->angularvelocity += (currbodydet.second)->rad2deg(pum::dotpro(rbperp, impulse)) * (currbodydet.second)->getInvInertia();
-		//std::cout << "next angular vel " << (((currbodydet.second)->angularvelocity)) << std::endl;
-
-
-		//std::cout << "rbperp " << rbperp.x << " " << rbperp.y << std::endl;
 		angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
 		angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
-		//cout << "angulatlinear velocity " << (angularlinearvelocityb.x) << " " << (angularlinearvelocityb.y) << endl;
 		relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
-		//std::cout << "relvel " << (relativevelocity.x) << " " << relativevelocity.y << std::endl;
-		//std::cout<<"rel vel length "<<(relativevelocity.length())<<std::endl;
-		//std::cout << "contact vel length " << (pum::dotpro(relativevelocity, normal)) << std::endl;
-		//std::cout << std::endl;
+		
 
 
-		//return;
-		//continue;
 		//recalculating the normal for friction constant
 		normal = relativevelocity;
 		normal.normalize();
@@ -718,8 +670,6 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 
 
 		pum::vector2d tangent = relativevelocity - (normal * contactvelocitymag);
-		//std::cout << "static relvel orig " << (relativevelocity.length()) << std::endl;
-		//std::cout << "tangetwith mag " << tangent.x << " " << tangent.y << std::endl;
 		if (this->nearlyequal(tangent, pum::vector2d(0, 0)))
 		{
 			continue;
@@ -737,23 +687,18 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 			(raperpdott * raperpdott) * (basebodydet.second)->getInvInertia() +
 			(rbperpdott * rbperpdott) * (currbodydet.second)->getInvInertia();
 
-		//std::cout << "contact vel friction " << pum::dotpro(relativevelocity, tangent) << std::endl;
 		double jf = -1.0 * pum::dotpro(relativevelocity, tangent);
 		jf = jf / denom;
 
 		pum::vector2d frictionimpulse;
 
-		double sf = nail->staticfricitonconst;// std::min((basebodydet.second)->staticfriction, (currbodydet.second)->staticfriction);
-		//cout << "impulse needed " << abs(jf) << endl;
-		//cout << "impulse provided " << (abs(j * sf))<<" j= "<<j << endl;
+		double sf = nail->staticfricitonconst;
 		if (std::abs(jf) <= abs(j * sf))
 		{
-			//std::cout << "enough friciton" << std::endl;
 			frictionimpulse = tangent * jf;
 		}
 		else
 		{
-			//std::cout << "not enough friciton" << std::endl;
 			double sign = jf / std::abs(jf);
 			frictionimpulse = tangent * (sign * abs(j) * sf);
 		}
@@ -761,31 +706,19 @@ void PhysicsWorld::solvejointswithfriction2(joint* nail)
 
 		(basebodydet.second)->velocity = (basebodydet.second)->velocity - (frictionimpulse * (basebodydet.second)->getInvMass());
 		achange = (frictionimpulse * (basebodydet.second)->getInvMass() * -1);
-		//std::cout << "avel " << ((basebodydet.second)->velocity.x) << " " << ((basebodydet.second)->velocity.y) << std::endl;
-		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
 		(basebodydet.second)->angularvelocity -= (basebodydet.second)->rad2deg(pum::dotpro(raperp, frictionimpulse)) * (basebodydet.second)->getInvInertia();
 
 
-		//std::cout << "bvel prev " << ((currbodydet.second)->velocity.x) << " " << ((currbodydet.second)->velocity.y) << std::endl;
 		(currbodydet.second)->velocity = (currbodydet.second)->velocity + (frictionimpulse * (currbodydet.second)->getInvMass());
 		bchange = (frictionimpulse * (currbodydet.second)->getInvMass() * -1);
-		//std::cout << "bvel " << ((currbodydet.second)->velocity.x) << " " << ((currbodydet.second)->velocity.y) << std::endl;
-		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
 		(currbodydet.second)->angularvelocity += (currbodydet.second)->rad2deg(pum::dotpro(rbperp, frictionimpulse)) * (currbodydet.second)->getInvInertia();
-		//std::cout << "a angulat vel " << ((currbodydet.second)->angularvelocity) << std::endl;
 
 		angularlinearvelocitya = raperp * ((basebodydet.second)->deg2rad((basebodydet.second)->angularvelocity));
 		angularlinearvelocityb = rbperp * ((currbodydet.second)->deg2rad((currbodydet.second)->angularvelocity));
 		relativevelocity = ((currbodydet.second)->velocity + angularlinearvelocityb) - ((basebodydet.second)->velocity + angularlinearvelocitya);
 
-
-		//std::cout << "static friciton " << (nail->staticfricitonconst) << " " << (relativevelocity.length()) << std::endl;
-		//cout << "contact vel rem " << pum::dotpro(relativevelocity, tangent) << endl;
-
-
 	}
-	//cout << endl;
-	//std::cout << " ============= " << std::endl;
+
 	for (auto itr = begin(nail->bodies); itr != end(nail->bodies); itr++)
 	{
 		pum::vector2d posdiff = jointpos - (itr->second)->getglobalpos(itr->first);
@@ -807,17 +740,8 @@ void PhysicsWorld::solvespring(spring* spr,double delta)
 	double dis = (pos1 - pos2).length();
 	pum::vector2d reldis = pos2 - pos1;
 	double tomove = 0;
-	if (dis > spr->maxlen)
-	{
-		//tomove = spr->maxlen - dis;
-	}
-	else if (dis < spr->minlen)
-	{
-		//tomove = spr->minlen - dis;
-	}
-	//cout << "tomove " << tomove << endl;
+	
 	reldis.normalize();
-	//cout << "reldis " << reldis.x << " " << reldis.y << endl;
 
 	separateBodies(spr->body1, spr->body2, reldis, -1.0 *tomove);
 	dis = (pos1 - pos2).length();
@@ -850,8 +774,7 @@ void PhysicsWorld::solvespring(spring* spr,double delta)
 
 	pum::vector2d impulse = reldis * (spr->springconstant * x * -1 * delta);
 
-	//cout << "impulse " << impulse.x << " " << impulse.y << endl;
-	//cout << "impulse " << impulse.x << " " << impulse.y << endl;
+	
 	pum::vector2d ra = pos1 - spr->body1->position;
 	pum::vector2d rb = pos2 - spr->body2->position;
 
@@ -864,6 +787,15 @@ void PhysicsWorld::solvespring(spring* spr,double delta)
 	impulse = impulse + (relativevelocity * (spr->coefficientofdamping) * -1.0 * delta);
 
 
+	spr->body1->applyImpulse(impulse * -1.0, pos1);
+	//a->velocity = a->velocity - (impulse * a->getInvMass());
+	//a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, impulse)) * a->getInvInertia();
+
+	spr->body2->applyImpulse(impulse * 1.0, pos2);
+	//b->velocity = b->velocity + (impulse * b->getInvMass());
+	//b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, impulse)) * b->getInvInertia();
+
+	/*
 	spr->body1->velocity = spr->body1->velocity - (impulse * spr->body1->getInvMass());
 	pum::vector2d achange = (impulse * spr->body1->getInvMass() * -1);
 	//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
@@ -873,7 +805,7 @@ void PhysicsWorld::solvespring(spring* spr,double delta)
 	spr->body2->velocity = spr->body2->velocity + (impulse * spr->body2->getInvMass());
 	pum::vector2d bchange = (impulse * spr->body2->getInvMass() * -1);
 	//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
-	spr->body2->angularvelocity += spr->body2->rad2deg(pum::dotpro(rbperp,impulse)) * spr->body2->getInvInertia();
+	spr->body2->angularvelocity += spr->body2->rad2deg(pum::dotpro(rbperp,impulse)) * spr->body2->getInvInertia();*/
 
 
 
@@ -948,15 +880,13 @@ void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, coll
 		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
 		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
 
-		a->velocity = a->velocity - (impulse * a->getInvMass());
-		pum::vector2d achange = (impulse * a->getInvMass() * -1);
-		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
-		a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, impulse)) * a->getInvInertia();
+		a->applyImpulse(impulse * -1.0, contaclist[i]);
+		//a->velocity = a->velocity - (impulse * a->getInvMass());
+		//a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, impulse)) * a->getInvInertia();
 
-		b->velocity = b->velocity + (impulse * b->getInvMass());
-		pum::vector2d bchange = (impulse * b->getInvMass() * 1);
-		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
-		b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, impulse)) * b->getInvInertia();
+		b->applyImpulse(impulse * 1.0, contaclist[i]);
+		//b->velocity = b->velocity + (impulse * b->getInvMass());
+		//b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, impulse)) * b->getInvInertia();
 	}
 
 
@@ -1024,15 +954,24 @@ void PhysicsWorld::resolvecollisionwithfriciton(RigidBody* a, RigidBody* b, coll
 		pum::vector2d raperp = pum::vector2d(-1.0 * ra.y, 1.0 * ra.x);
 		pum::vector2d rbperp = pum::vector2d(-1.0 * rb.y, 1.0 * rb.x);
 
-		a->velocity = a->velocity - (frictionimpulse * a->getInvMass());
-		pum::vector2d achange = (frictionimpulse * a->getInvMass() * -1);
-		//std::cout << "achange " << achange.x << " " << achange.y << std::endl;
-		a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, frictionimpulse)) * a->getInvInertia();
 
-		b->velocity = b->velocity + (frictionimpulse * b->getInvMass());
-		pum::vector2d bchange = (frictionimpulse * b->getInvMass() * -1);
-		//std::cout << "bchange " << bchange.x << " " << bchange.y << std::endl;
-		b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, frictionimpulse)) * b->getInvInertia();
+
+		a->applyImpulse(frictionimpulse * -1.0, contaclist[i]);
+		//a->velocity = a->velocity - (impulse * a->getInvMass());
+		//a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, impulse)) * a->getInvInertia();
+
+		b->applyImpulse(frictionimpulse * 1.0, contaclist[i]);
+		//b->velocity = b->velocity + (impulse * b->getInvMass());
+		//b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, impulse)) * b->getInvInertia();
+
+
+		//a->velocity = a->velocity - (frictionimpulse * a->getInvMass());
+		//pum::vector2d achange = (frictionimpulse * a->getInvMass() * -1);
+		//a->angularvelocity -= a->rad2deg(pum::dotpro(raperp, frictionimpulse)) * a->getInvInertia();
+
+		//b->velocity = b->velocity + (frictionimpulse * b->getInvMass());
+		//pum::vector2d bchange = (frictionimpulse * b->getInvMass() * -1);
+		//b->angularvelocity += b->rad2deg(pum::dotpro(rbperp, frictionimpulse)) * b->getInvInertia();
 
 	}
 	//std::cout << "==========" << std::endl;

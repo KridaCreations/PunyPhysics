@@ -16,12 +16,12 @@ PhysicsWorld* PhysicsWorld::instancePtr = nullptr;
 
 int main()
 {
-    int width = 1080;
+    int width = 900;
     int height = 900;
     sf::RenderWindow window(sf::VideoMode(width,height), "Window Title", sf::Style::Titlebar | sf::Style::Close);
     //win = &window;
     PhysicsWorld::getInstance()->window = &window;
-    //PhysicsWorld::getInstance()->gravity = pum::vector2d(0,1000);
+    PhysicsWorld::getInstance()->gravity = pum::vector2d(0,1000);
     ImGui::SFML::Init(window);
     vector<Circle*> circles;
     vector<Rectangle*> rectangles;
@@ -37,7 +37,6 @@ int main()
         //sf::Color::White,
         sf::Color::Yellow
     };
-
 
     Rectangle* wiperleftbrush = new Rectangle(sf::Vector2f(450 - 200, 450), 10, 200, 100, false, RigidBody::Rigid, sf::Color::Magenta);
     rectangles.push_back(wiperleftbrush);
@@ -119,12 +118,12 @@ int main()
 
     pum::vector2d to = (pum::vector2d(570, 600) + pum::vector2d(-40, 0));
     pum::vector2d from = wiperright->physicsbody->position + pum::vector2d(0, 100);
-    double length = (to-from).length();
+    double length = (to - from).length();
     pum::vector2d mid = (to - from) / 2;
     cout << "length " << length << endl;
 
 
-    Rectangle* rod2 = new Rectangle(sf::Vector2f(mid.x,mid.y), 10, length, 10, false, RigidBody::Rigid, sf::Color::Green);
+    Rectangle* rod2 = new Rectangle(sf::Vector2f(mid.x, mid.y), 10, length, 10, false, RigidBody::Rigid, sf::Color::Green);
     rectangles.push_back(rod2);
     rod2->physicsbody->layer.reset();
     rod2->physicsbody->setrotation(63);
@@ -137,7 +136,7 @@ int main()
     j5->addbodies(rod2->physicsbody, pum::vector2d(0, (length / (-2))));
 
 
-    Circle* axel = new Circle(sf::Vector2f(570, 600), 40, 100, false, RigidBody::Static,sf::Color::Blue);
+    Circle* axel = new Circle(sf::Vector2f(570, 600), 40, 100, false, RigidBody::Static, sf::Color::Blue);
     circles.push_back(axel);
     axel->physicsbody->layer.reset();
     axel->physicsbody->angularvelocity = 400;
@@ -146,26 +145,19 @@ int main()
     j6->staticfricitonconst = 0.00;
     PhysicsWorld::getInstance()->joints.push_back(j6);
     j6->addbodies(axel->physicsbody, pum::vector2d(-40, 0));
-    j6->addbodies(rod2->physicsbody, pum::vector2d(0, (length/2)));
-
-
-
-
-
-
-
+    j6->addbodies(rod2->physicsbody, pum::vector2d(0, (length / 2)));
 
 
 
     //forming boundaries////////////////////
-    /*Rectangle* temprectangle2 = new Rectangle(sf::Vector2f(450, 900), 800, 100, 10, false,RigidBody::Static,sf::Color::Transparent);
-    Rectangle* temprectangle3 = new Rectangle(sf::Vector2f(900, 450), 100, 800, 10, false, RigidBody::Static,sf::Color::Transparent);
-    Rectangle* temprectangle4 = new Rectangle(sf::Vector2f(450, 0), 800, 100, 10, false, RigidBody::Static,sf::Color::Transparent);
-    Rectangle* temprectangle5 = new Rectangle(sf::Vector2f(0, 450), 100, 800, 10, false, RigidBody::Static,sf::Color::Transparent);
+    Rectangle* temprectangle2 = new Rectangle(sf::Vector2f(450, 900), 800, 100, 10, false,RigidBody::Static);
+    Rectangle* temprectangle3 = new Rectangle(sf::Vector2f(900, 450), 100, 800, 10, false, RigidBody::Static);
+    Rectangle* temprectangle4 = new Rectangle(sf::Vector2f(450, 0), 800, 100, 10, false, RigidBody::Static);
+    Rectangle* temprectangle5 = new Rectangle(sf::Vector2f(0, 450), 100, 800, 10, false, RigidBody::Static);
     rectangles.push_back(temprectangle2);
     rectangles.push_back(temprectangle3);
     rectangles.push_back(temprectangle4);
-    rectangles.push_back(temprectangle5);*/
+    rectangles.push_back(temprectangle5);
 
     sf::Clock gameClock;
     sf::Clock deltaClock;
